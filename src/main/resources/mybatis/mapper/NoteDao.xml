@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dzyown.dao.NoteDao">
+
+
+
+    <select id="getAllNotesByCourse" resultType="com.dzyown.pojo.Note">
+
+
+        <if test="userId==-1">
+            SELECT ml_note.*,ml_note_collect.user_id as collect,ml_user.username
+            FROM  ml_note
+            LEFT JOIN ml_user on ml_user.id = ml_note.user_id
+            LEFT JOIN  ml_note_collect on ml_note_collect.note_id = ml_note.id
+            and ml_note_collect.del =0
+            and ml_note_collect.user_id = #{del}
+            where course_id = #{courseId}
+            and ml_note.del =0
+            LIMIT 25
+
+        </if>
+
+        <if test="userId!=-1">
+            select ml_note.*,ml_user.username from micro.ml_note  , micro.ml_user where ml_note.del = 0
+            and user_id = ml_user.id
+            and user_id = #{userId}
+            and course_id = #{courseId}
+            order by id  DESC limit 0,25;
+        </if>
+
+    </select>
+
+    <select id="getAllNotesUser" resultType="com.dzyown.pojo.Note">
+         select ml_note.*, ml_course.title ,ml_course.author ,ml_course.cover_path ,ml_user.username
+         from micro.ml_note ,ml_course ,ml_user
+         where ml_note.del = 0
+         and ml_user.id = ml_note.user_id
+         and ml_course.id = ml_note.course_id
+         and ml_note.user_id = #{userId} order by id  DESC limit 0,50
+    </select>
+
+    <select id="getCollectNotesUser" resultType="com.dzyown.pojo.Note">
+         select  ml_note_collect.id as collect_id,ml_note.*, ml_course.title ,ml_course.author ,ml_course.cover_path ,ml_user.username
+         from micro.ml_note ,ml_course ,ml_user ,ml_note_collect
+         where ml_note_collect.del = 0
+         and ml_user.id = ml_note.user_id
+         and ml_course.id = ml_note.course_id
+				 and ml_note.id = ml_note_collect.note_id
+         and ml_note_collect.user_id = #{userId} order by collect_id  DESC limit 0,50
+    </select>
+
+
+    <insert id="addNote" parameterType="com.dzyown.pojo.Note">
+        insert into micro.ml_note(course_id, user_id, content, note_time)
+        values  (#{courseId},#{userId},#{content},#{noteTime})
+    </insert>
+
+
+    <update id="deleteNote" parameterType="com.dzyown.pojo.Note">
+        update  micro.ml_note set  del = 1 where id = #{id}
+    </update>
+
+    <insert id="collectNote" parameterType="com.dzyown.pojo.NoteCollect" >
+        insert into micro.ml_note_collect(note_id, user_id, collect_time)
+        values  (#{noteId},#{userId},#{collectTime})
+    </insert>
+
+    <update id="NoCollectNote" parameterType="com.dzyown.pojo.NoteCollect">
+        update micro.ml_note_collect set  del = 1  where note_id = #{noteId} and user_Id =#{userId} and del =0
+    </update>
+
+
+</mapper>

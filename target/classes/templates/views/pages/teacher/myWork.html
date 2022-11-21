@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我的作品</title>
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+    <script src="../res/layui/layui.js"></script>
+    <style type="text/css">
+        ::-webkit-scrollbar {
+            height: 0;
+            width: 0;
+            color: transparent;
+        }
+    </style>
+</head>
+<body>
+
+<div style="margin-left: 40px;margin-right: 40px;margin-top: 30px">
+
+    <blockquote class="layui-elem-quote"><i class="layui-icon layui-icon-list" style="font-size: 20px;">&nbsp;</i>我的课程发布</blockquote>
+
+    <div class="layui-bg-gray" style="padding: 30px;">
+
+        <table class="layui-hide" id="LAY_table_user" lay-filter="demo"></table>
+
+    </div>
+
+
+
+</div>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn  layui-btn-xs" lay-event="detail">观赏</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="train">习题</a>
+    <a class="layui-btn  layui-btn-xs layui-btn-normal" lay-event="editor">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script>
+
+    //layui.JavaScript代码区域
+    layui.use(['element', 'form', 'table', 'layer'], function() {
+        var element = layui.element;
+        var table = layui.table;
+        var form = layui.form;
+        var $ = layui.$;
+        var layer = layui.layer;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data) {
+            layer.msg(JSON.stringify(data.field));
+            return false;
+        });
+
+        //获取到表单的内容
+        $.fn.serializeObject = function () {
+            var o = {};
+            var a = this.serializeArray();
+            $.each(a, function () {
+                if (o[this.name]) {
+                    if (!o[this.name].push) {
+                        o[this.name] = [o[this.name]];
+                    }
+                    o[this.name].push(this.value || '');
+                } else {
+                    o[this.name] = this.value || '';
+                }
+            });
+            return o;
+        };
+
+
+        //方法级渲染
+        table.render({
+            elem: '#LAY_table_user',
+            url: '/getMyAllCourse',
+            cols: [[
+                    {
+                        field: 'id',
+                        title: 'ID',
+                        width: 70,
+                        sort: true,
+                        fixed: true
+                    }, {
+                        field: 'title',
+                        title: '标题',
+                        align: 'center'
+                }, {
+                    field: 'author',
+                    title: '作者',
+                    width: 80,
+                    align: 'center'
+                },{
+                    field: 'school',
+                    title: '所属学校',
+                    align: 'center'
+                },{
+                    field: 'type',
+                    title: '类型',
+                    width: 80,
+                    align: 'center'
+                }, {
+                    field: 'permission',
+                    title: '状态',
+                    width: 80,
+                    align: 'center',templet: function(d){
+                        if(d.permission == 0){
+                            return "<span style=\"color: #1E9FFF;\">待审核</span>";
+                        }else if(d.permission == 1){
+                            return "已批准";
+                        }else{
+                            return "<span style=\"color: #c00;\">被驳回</span>";
+                        }
+                    }
+                },{
+                    field: 'uploadTime',
+                    title: '上传时间',
+                    align: 'center'
+                }, {
+                    fixed: 'right',
+                    title: '数据操作',
+                    align: 'center',
+                    toolbar: '#barDemo'
+                }
+                ]
+            ],
+            id: 'testReload',
+            page: true,
+            parseData: function (res) { //将原始数据解析成 table 组件所规定的数据，res为从url中get到的数据
+                    var result;
+                    if (this.page.curr) {
+                        result = res.data.slice(this.limit * (this.page.curr - 1), this.limit * this.page.curr);
+                    }
+                    else {
+                        result = res.data.slice(0, this.limit);
+                    }
+                    return {
+                        "code": res.code, //解析接口状态
+                        "msg": res.msg, //解析提示文本
+                        "count": res.count, //解析数据长度
+                        "data": result //解析数据列表
+                    };
+            },
+
+            height: 475
+        });
+
+        //监听工具条
+        table.on('tool(demo)', function(obj) {
+            var data = obj.data;
+            if (obj.event === 'detail') {
+
+                layer.msg("即将至观赏课程页面...");
+                function jumpUrl() {
+                    window.location.href = 'seeMyWork?courseId='+data.id ;
+                }
+                setTimeout(jumpUrl, 1600);
+
+
+            } else if(obj.event === 'train') {
+
+                layer.msg("即将至制作习题页面...");
+                function jumpUrl() {
+                    window.location.href = 'makeTrain?courseId='+data.id ;
+                }
+                setTimeout(jumpUrl, 1600);
+
+
+            } else if (obj.event === 'editor') {
+
+                    layer.open({
+                        type: 1,
+                        title: '正在编辑课程信息', //标题栏
+                        skin: 'layui-layer-rim', //加上边框
+                        closeBtn: false,
+                        area: ['500px', '500px'],
+                        shade: 0.1,
+                        id: 'LAY_layuipro', //设定一个id，防止重复弹出
+                        btn: ['修改', '关闭'],
+                        btnAlign: 'c',
+                        moveType: 1, //拖拽模式，0或者1
+                        content: '<div style="margin-left: 10px;margin-right: 10px; margin-top: 30px">' +
+                        '<form class="layui-form layui-form-pane" action="" id="table_add" lay-filter="form_add">' +
+
+                        '<div class="layui-form-item" pane>' +
+                        '<label class="layui-form-label">课程名称</label>' +
+                        '<div class="layui-input-block">' +
+                        '<input type="text" name="title" required lay-verify="required" placeholder="课程名称" autocomplete="off" class="layui-input">' +
+                        '</div>' +
+                        ' </div>' +
+
+                        '<div class="layui-form-item" pane>' +
+                        '<label class="layui-form-label">课程概述</label>' +
+                        '<div class="layui-input-block">' +
+                        '<input type="text" name="info" required  lay-verify="required" placeholder="课程概述" autocomplete="off" class="layui-input">' +
+                        '</div>' +
+                        ' </div>' +
+
+                        '<div class="layui-form-item" pane>' +
+                        '<label class="layui-form-label">主讲人</label>' +
+                        '<div class="layui-input-block">' +
+                        '<input type="text" name="author" required  lay-verify="required" placeholder="主讲人" autocomplete="off" class="layui-input">' +
+                        '</div>' +
+                        ' </div>' +
+
+                        '<div class="layui-form-item" pane>' +
+                        '<label class="layui-form-label">所属院校</label>' +
+                        '<div class="layui-input-block">' +
+                        '<input type="text" name="school" required  lay-verify="required" placeholder="所属院校" autocomplete="off" class="layui-input">' +
+                        '</div>' +
+                        ' </div>' +
+
+                       ' <div class="layui-form-item" pane>' +
+                            ' <label class="layui-form-label">类型:</label>' +
+                            '<div class="layui-input-block">' +
+                            ' <input type="radio" name="type" value="哲学" title="哲学">' +
+                            ' <input type="radio" name="type" value="经济" title="经济" >' +
+                            '  <input type="radio" name="type" value="法学" title="法学" >' +
+                            '  <input type="radio" name="type" value="教育" title="教育" >' +
+                            '   <input type="radio" name="type" value="文学" title="文学" >' +
+                            '  <input type="radio" name="type" value="历史" title="历史" >' +
+                            '  <input type="radio" name="type" value="理学" title="理学">' +
+                            '   <input type="radio" name="type" value="工学" title="工学" checked>' +
+                            ' <input type="radio" name="type" value="农学" title="农学" >' +
+                            '   <input type="radio" name="type" value="医学" title="医学" >' +
+                            '   <input type="radio" name="type" value="管理" title="管理" >' +
+                            '   <input type="radio" name="type" value="艺术" title="艺术" >' +
+                            '   </div>' +
+                             '   </div>' +
+
+                        '<center><div>只能修改非视频内容，若要更换视频，建议删除重新创建课程！</div></center>' +
+                        '  </form>' +
+                        '</div>',
+                        success: function () {
+                            form.val("form_add", {
+                                "author": data.author,
+                                "school": data.school,
+                                "info": data.info,
+                                "title": data.title,
+                                "type": data.type
+                            });
+                            form.render();
+                        },
+                        yes: function () {
+
+                            var JSONdata = JSON.parse(JSON.stringify($('#table_add').serializeObject()));
+                            if (JSONdata.author == "" || JSONdata.school == "" || JSONdata.info == "" || JSONdata.title == "" || JSONdata.type == "") {
+                                layer.msg("请先完善必需信息！");
+                            } else {
+                                $.ajax({
+                                    url: "/updateCourse",
+                                    type: 'POST',
+                                    data: {
+                                        "id":data.id,
+                                        "author": JSONdata.author,
+                                        "school": JSONdata.school,
+                                        "info": JSONdata.info,
+                                        "title": JSONdata.title,
+                                        "type": JSONdata.type
+                                    },
+                                    dataType: 'json',
+                                    success: function (res) {
+                                        layer.closeAll();
+                                        layer.msg(res.msg, {
+                                            shade: 0.1,
+                                            time: 1000
+                                        }, function (index) {
+                                            layer.closeAll();
+                                            window.location.reload()//页面重加载
+                                        });
+                                    }
+                                });
+                            }
+
+                        }
+                    });
+
+
+            }else if (obj.event === 'del') {
+                layer.confirm('确定要删除此课程吗', function(index) {
+                    obj.del();
+                    $.ajax({
+                        url: "/deleteCourse?id=" +data.id,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (res) {
+                            layer.msg(res.msg);
+                        }
+                    });
+                    layer.close(index);
+                });
+            }
+        });
+
+
+
+
+    });
+</script>
+
+
+</body>
+</html>

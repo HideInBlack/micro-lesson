@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>登录失效处理</title>
+    <link rel="stylesheet" th:href="@{../res/layui/css/layui.css}">
+    <script th:src="@{../res/layui/layui.js}"></script>
+</head>
+<body>
+<center>
+<h2 style="margin-top: 50px"><i class="layui-icon layui-icon-face-surprised" style="font-size: 30px"></i> 网络出错，登录已失效！<br></br>将重新跳转至登陆界面</h2>
+</center>
+</body>
+<script th:inline="javascript">
+    //用thymeleaf取到msg信息
+    var data = [[${msg}]];
+
+    //layer弹出层
+    layui.use('layer', function () { //独立版的layer无需执行这一句
+        var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
+
+        if (data == null) {//没有信息时
+            layer.msg('网络出错', {
+                time: 2000 //2s后自动关闭
+            });
+        } else {
+            layer.msg(data);
+            function jumpUrl() {
+                top.location.href = "/login";
+            }
+            setTimeout(jumpUrl, 2000);
+        }
+
+    });
+</script>
+</html>

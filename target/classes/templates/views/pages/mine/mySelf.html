@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>我的信息编辑</title>
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+    <script src="../res/layui/layui.js"></script>
+    <style type="text/css">
+        ::-webkit-scrollbar {
+            height: 0;
+            width: 0;
+            color: transparent;
+        }
+    </style>
+</head>
+<body>
+<div style="margin-left: 10px;margin-right: 10px;margin-top: 10px">
+
+
+
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend><i class="layui-icon layui-icon-username" style="font-size: 22px;"></i>&nbsp;<span style="font-size: 16px">编辑信息</span></legend>
+        <!--<button type="button" onclick="addAlbum()" class="layui-btn layui-btn-radius" style="float: right">新建相册</button>-->
+    </fieldset>
+
+    <div style="text-align:center;">
+        <img src="../utils/image/headImg/1.jpg" class="layui-nav-img" style="width: 70px;height: 70px;margin-left: 7px" id="headImg">
+        <div ><span id="userName">学到破晓的妖怪</span></div>
+        <div ><span id="email" style="color:#1E9FFF" >email@qq.com</span></div>
+        <div style="color:#c2c2c2"><span id="userMotto">这个家伙很懒，并没有设置格言...</span></div>
+        <span style="color:#c2c2c2;font-size: 10px ;"><span id="registerTime">2015-10-10 10:18</span></span>
+    </div>
+    <form class="layui-form" action="" lay-filter="form_add" id="update"
+          style="margin-top: 10px;margin-left: 10px;margin-right: 10px">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-block">
+                <input type="text" name="userName" required lay-verify="required" placeholder="请输入昵称" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">箴言</label>
+            <div class="layui-input-block">
+                <input type="text" name="motto" required lay-verify="required" placeholder="请输入格言" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-block">
+                <input type="radio" name="sex" value="男" title="男">
+                <input type="radio" name="sex" value="女" title="女" >
+            </div>
+        </div>
+
+        <center>
+                    <button class="layui-btn" type="button" onclick="updateUser()">修改</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </center>
+    </form>
+
+
+</div>
+</body>
+
+<script>
+    layui.use(['dropdown', 'util', 'layer', 'element', 'jquery', 'laytpl', 'form'], function () {
+        var element = layui.element;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        var form = layui.form;
+        var laytpl = layui.laytpl;
+        var util = layui.util;
+        form.render();
+
+        //页面请求初始化
+        $.ajax({
+            url: "/getUserDetail",
+            type: 'GET',
+            dataType: 'json',
+            success: function (res) {
+                //个人简介初始化
+                document.getElementById("headImg").setAttribute("src" ,"../utils/image/headImg/"+res.data.id+".jpg");
+                document.getElementById("userName").innerText = res.data.userName;
+                document.getElementById("email").innerText = res.data.email;
+                document.getElementById("registerTime").innerText = res.data.registerTime;
+                if (res.data.motto != null) {
+                    document.getElementById("userMotto").innerText = res.data.motto;
+                }
+
+                form.val("form_add", {
+                    "userName": res.data.userName,
+                    "sex": res.data.sex,
+                    "motto": res.data.motto,
+                });
+                form.render();
+            }
+        });
+
+        $.fn.serializeObject = function () {
+            var o = {};
+            var a = this.serializeArray();
+            $.each(a, function () {
+                if (o[this.name]) {
+                    if (!o[this.name].push) {
+                        o[this.name] = [o[this.name]];
+                    }
+                    o[this.name].push(this.value || '');
+                } else {
+                    o[this.name] = this.value || '';
+                }
+            });
+            return o;
+        };
+
+        //点击信息修改的的事件
+        window.updateUser = function () {
+
+            var JSONdata = JSON.parse(JSON.stringify($('#update').serializeObject()));
+            if (JSONdata.userName == "" || JSONdata.sex == "" ||  JSONdata.motto == "") {
+                layer.msg("请先完善必需信息！");
+            } else {
+                    $.ajax({
+                        url: "/updateInfoUser",
+                        type: 'POST',
+                        data: {
+                            "userName": JSONdata.userName,
+                            "sex": JSONdata.sex,
+                            "motto": JSONdata.motto,
+                            "memo" :"info"
+                        },
+                        dataType: 'json',
+                        success: function (res) {
+                            layer.closeAll();
+                            layer.msg(res.msg, {
+                                shade: 0.1,
+                                time: 1000,
+                            }, function (index) {
+                                layer.closeAll();
+                                window.location.reload()//页面重加载
+                            });
+                        }
+                    });
+
+            }
+
+        }
+
+
+    });
+</script>
+
+</html>

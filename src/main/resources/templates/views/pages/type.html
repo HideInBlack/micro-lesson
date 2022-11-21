@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>学科专栏</title>
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+    <script src="../res/layui/layui.js"></script>
+    <style type="text/css">
+        ::-webkit-scrollbar {
+            height: 0;
+            width: 0;
+            color: transparent;
+        }
+    </style>
+</head>
+<body>
+
+<div style="margin-left: 10px;margin-right: 10px;margin-top: 10px">
+
+    <blockquote class="layui-elem-quote" ><i class="layui-icon layui-icon-date" style="font-size: 15px;">&nbsp;</i><span id="typeText"></span>学科专栏</blockquote>
+
+    <div class="layui-carousel" id="test10">
+        <div carousel-item="">
+            <div><a href="/mp4?courseId=46"><img src="../utils/image/gongxue/工学1.jpg" style="width: 100%;height: 100%"></a></div>
+            <div><a href="/mp4?courseId=46"><img src="../utils/image/gongxue/工学2.jpg" style="width: 100%;height: 100%"></a></div>
+            <div><a href="/mp4?courseId=46"><img src="../utils/image/gongxue/工建筑学1.jpg" style="width: 100%;height: 100%"></a></div>
+            <div><a href="/mp4?courseId=46"><img src="../utils/image/gongxue/工建筑学2.jpg" style="width: 100%;height: 100%"></a></div>
+        </div>
+    </div>
+    <div style="padding: 5px;background-color:#e2e2e2">
+
+        <div class="layui-row layui-col-space13">
+
+            <div id="viewPhotos"></div>
+
+        </div>
+    </div>
+
+
+
+</div>
+
+<script id="scriptPhotos" type="text/html">
+
+
+    {{#  layui.each(d.photosData, function(index, item){   }}
+    <hr class="layui-border-black">
+    <a href="/mp4?courseId={{ item.id }}">
+        <div class="layui-col-xs4">
+            <div class="layui-card" style="height: 122px">
+                <div style="position:relative;">
+                    <img src="{{ item.coverPath }}" style="width: 88% ;height: 80px;margin-top: 20px;margin-left: 7px;">
+                    {{#  if(getLastName(item.path)=== "mp4"){ }}
+                    <i class="layui-icon layui-icon-play" style="position:absolute; z-index:2; left:35px; top:37px;font-size: 40px;color: #5FB878"></i>
+                    {{#  } }}
+                </div>
+            </div>
+        </div>
+    </a>
+    <div class="layui-col-xs8">
+        <div class="layui-card">
+            <div class="layui-card-header"><span style="font-size: 15px;">《{{ cutstr(item.title,18) }}》</span></div>
+            <div class="layui-card-body" style="height: 59px">
+                                <span style="font-size: 10px;">{{ cutstr(item.school,16)  }} {{ cutstr(item.author,16)  }}<br>
+                                {{ cutstr(item.info,60)  }}</span>
+            </div>
+        </div>
+    </div>
+
+    {{#  });    }}
+    {{#  if(d.photosData.length === 0){ }}
+    <p>没有搜索到此相关作品！</p>
+    {{#  } }}
+
+
+</script>
+
+<script>
+    //获取后缀名
+    function getLastName(str){
+        var fileName = str.lastIndexOf(".");//获取到文件名开始到最后一个“.”的长度。
+        var fileNameLength = str.length;//获取到文件名长度
+
+        var result = str.substring(fileName + 1, fileNameLength);//截取后缀名
+        return result;
+    }
+    //字符串截取方法
+    function cutstr(str, len){
+        var str_length = 0;
+        var str_len = 0;
+        str_cut = new String();
+        str_len = str.length;
+        for (var i = 0; i < str_len; i++) {
+            a = str.charAt(i);
+            str_length++;
+            if (escape(a).length > 4) {
+                //中文字符的长度经编码之后大于4
+                str_length++;
+            }
+            str_cut = str_cut.concat(a);
+            if (str_length >= len) {
+                str_cut = str_cut.concat("..");
+                return str_cut;
+            }
+        }
+        //如果给定字符串小于指定长度，则返回源字符串；
+        if (str_length < len) {
+            return str;
+        }
+    }
+
+    layui.use(['dropdown', 'util', 'layer', 'element', 'jquery', 'laytpl', 'form','carousel'], function () {
+        var element = layui.element;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        var form = layui.form;
+        var laytpl = layui.laytpl;
+        var util = layui.util;
+        var carousel = layui.carousel;
+
+        //图片轮播
+        carousel.render({
+            elem: '#test10'
+            ,width: '100%'
+            ,height: '200px'
+            ,interval: 4000
+        });
+
+        //(获得url中参数的方法)
+        function getParamString(paraPart, name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = paraPart.substr(1).match(reg);
+            if (r != null) return decodeURI(r[2]);
+            return null;
+        }
+        function getParamFromUrl(name) {
+            var r = getParamString(window.location.search, name);
+            return r;
+        }
+
+        var type = decodeURI(getParamFromUrl('type'));
+
+        window.deleteNote = function(){
+            layer.msg("移除此课程");
+        };
+
+        document.getElementById("typeText").innerText = "<--" + type + "-->";
+
+        //页面请求初始化
+        $.ajax({
+            url: "/typeCourse?type=" + type,
+            type: 'GET',
+            dataType: 'json',
+            success: function (res) {
+                if (res.code == 0) {
+                    var result = res;
+                    var selectData = {
+                        "photosData": res.data
+                    };
+                    var getTpl = scriptPhotos.innerHTML;
+                    var view = document.getElementById('viewPhotos');
+                    laytpl(getTpl).render(selectData, function (html) {
+                        view.innerHTML = html;
+                    });
+                } else {
+                    //layer.msg(res.msg);
+                }
+            }
+        });
+
+
+
+    });
+
+
+
+</script>
+
+</body>
+</html>

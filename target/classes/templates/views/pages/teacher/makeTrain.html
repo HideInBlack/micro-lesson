@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>制作习题界面</title>
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+    <script src="../res/layui/layui.js"></script>
+    <style type="text/css">
+        ::-webkit-scrollbar {
+            height: 0;
+            width: 0;
+            color: transparent;
+        }
+    </style>
+</head>
+<body>
+
+<div style="margin-left: 40px;margin-right: 40px;margin-top: 30px">
+
+    <blockquote class="layui-elem-quote"><i class="layui-icon layui-icon-template-1" style="font-size: 20px;">&nbsp;</i>课程习题制作</blockquote>
+
+    <div style="margin-left: 150px;margin-right: 150px">
+
+        <form class="layui-form layui-form-pane" action="" id="trainForm">
+            <div class="layui-form-item layui-form-text" >
+                <label class="layui-form-label">题目</label>
+                <div class="layui-input-block">
+                    <textarea name="title" placeholder="请输入内容" class="layui-textarea"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item" pane>
+                <label class="layui-form-label">选项A：</label>
+                <div class="layui-input-block">
+                    <input type="text" name="selectA" required  lay-verify="required" placeholder="请输入选项A的内容" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item" pane>
+                <label class="layui-form-label">选项B：</label>
+                <div class="layui-input-block">
+                    <input type="text" name="selectB" required  lay-verify="required" placeholder="请输入选项B的内容" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item" pane>
+                <label class="layui-form-label">选项C：</label>
+                <div class="layui-input-block">
+                    <input type="text" name="selectC" required  lay-verify="required" placeholder="请输入选项C的内容" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item" pane>
+                <label class="layui-form-label">选项D：</label>
+                <div class="layui-input-block">
+                    <input type="text" name="selectD" required  lay-verify="required" placeholder="请输入选项D的内容" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item" pane>
+                <label class="layui-form-label">设定答案</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="answer" value="A" title="A">
+                    <input type="radio" name="answer" value="B" title="B" >
+                    <input type="radio" name="answer" value="C" title="C">
+                    <input type="radio" name="answer" value="D" title="D" >
+                </div>
+            </div>
+
+            <div class="layui-form-item" >
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-filter="formDemo" type="button" onclick="addTrain()">添加</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    <br>
+
+    <fieldset class="layui-elem-field layui-field-title" style="color: #009688">
+        <legend><span style="font-size: 15px">课后习题展示</span></legend>
+    </fieldset>
+    <form class="layui-form" action="">
+        <div id="viewPhotos"></div>
+        <br>
+
+    </form>
+    </div>
+
+</div>
+
+
+</div>
+
+<script id="scriptPhotos" type="text/html">
+
+
+    {{#  layui.each(d.photosData, function(index, item){   }}
+    <!--<a href="">-->
+    {{#     var selection = item.selection;
+            var select = selection.split(",");
+    }}
+        <div class="layui-form-item">
+            <div style="font-weight: bolder">{{index+1}}.{{item.title}}</div><br>
+            <div style="margin-left: 15px">&nbsp;A.{{select[0]}}</div>
+            <div style="margin-left: 15px">&nbsp;B.{{select[1]}}</div>
+            <div style="margin-left: 15px">&nbsp;C.{{select[2]}}</div>
+            <div style="margin-left: 15px">&nbsp;D.{{select[3]}}</div>
+            <div style="margin-left: 20px">
+                {{#  if(item.answer === "A"){ }}
+                <input type="radio" name="{{item.id}}" value="A" title="A" checked  >
+                {{#  } else { }}
+                <input type="radio" name="{{item.id}}" value="A" title="A" >
+                {{#  } }}
+                {{#  if(item.answer === "B"){ }}
+                <input type="radio" name="{{item.id}}" value="B" title="B" checked  >
+                {{#  } else { }}
+                <input type="radio" name="{{item.id}}" value="B" title="B" >
+                {{#  } }}
+                {{#  if(item.answer === "C"){ }}
+                <input type="radio" name="{{item.id}}" value="C" title="C" checked  >
+                {{#  } else { }}
+                <input type="radio" name="{{item.id}}" value="C" title="C" >
+                {{#  } }}
+                {{#  if(item.answer === "D"){ }}
+                <input type="radio" name="{{item.id}}" value="D" title="D" checked  >
+                {{#  } else { }}
+                <input type="radio" name="{{item.id}}" value="D" title="D" >
+                {{#  } }}
+
+            </div>
+    <br>
+    <!--</a>-->
+    {{#  });    }}
+    {{#  if(d.photosData.length === 0){ }}
+    <p>还没有制作任何习题！</p>
+    {{#  } }}
+</script>
+
+<script>
+    layui.use(['upload', 'form', 'element', 'layer','laytpl'], function () {
+        var element = layui.element;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        var upload = layui.upload;
+        var laytpl = layui.laytpl;
+        var form = layui.form;
+        form.render();
+
+        //自定义获得url中参数的方法
+        function GetRequest() {
+            var url = location.search; //获取url中含"?"符后的字串
+            var theRequest = new Object();
+            if (url.indexOf("?") != -1) {
+                var str = url.substr(1);
+                strs = str.split("&");
+                for (var i = 0; i < strs.length; i++) {
+                    theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+                }
+            }
+            return theRequest;
+        }
+        var Request = new Object();
+        Request = GetRequest();
+        var courseId = Request['courseId'];
+
+        //点击返回事件
+        window.back = function () {
+            window.history.back(-1);//页面重加载-页面返回到上一页
+        };
+
+        //页面请求初始化
+        $.ajax({
+            url: "/getAllTrain?courseId=" +courseId,
+            type: 'GET',
+            dataType: 'json',
+            success: function (res) {
+                if (res.code == 0) {
+                    var result = res;
+                    var selectData = {
+                        "photosData": res.data
+                    };
+                    var getTpl = scriptPhotos.innerHTML;
+                    var view = document.getElementById('viewPhotos');
+                    laytpl(getTpl).render(selectData, function (html) {
+                        view.innerHTML = html;
+                    });
+                    form.render();
+                } else {
+                    //layer.msg(res.msg);
+                }
+            }
+        });
+        //添加习题
+        window.addTrain = function(){
+            var JSONdata = JSON.parse(JSON.stringify($('#trainForm').serializeObject()));
+            if (JSONdata.title == "" || JSONdata.selectA == "" ||JSONdata.selectB == "" ||JSONdata.selectC == "" ||
+                JSONdata.selectD == "" || JSONdata.answer == "" ) {
+                layer.msg("请先完善习题必须信息！");
+            } else {
+                $.ajax({
+                    url: "/addTrain",
+                    type: 'POST',
+                    data: {
+                        "courseId":courseId,
+                        "title": JSONdata.title,
+                        "selection": JSONdata.selectA + "," +JSONdata.selectB + ","+JSONdata.selectC + ","+JSONdata.selectD,
+                        "answer": JSONdata.answer
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+
+                        layer.closeAll();
+                        layer.msg(res.msg, {
+                            shade: 0.1,
+                            time: 1000
+                        }, function (index) {
+                            layer.closeAll();
+                            window.location.reload();
+                        });
+                    }
+                });
+            }
+        };
+
+        //获取到表单的内容
+        $.fn.serializeObject = function () {
+            var o = {};
+            var a = this.serializeArray();
+            $.each(a, function () {
+                if (o[this.name]) {
+                    if (!o[this.name].push) {
+                        o[this.name] = [o[this.name]];
+                    }
+                    o[this.name].push(this.value || '');
+                } else {
+                    o[this.name] = this.value || '';
+                }
+            });
+            return o;
+        };
+
+
+    });
+</script>
+
+</body>
+</html>

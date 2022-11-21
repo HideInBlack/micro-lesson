@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>观赏作品</title>
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+    <script src="../res/layui/layui.js"></script>
+    <link rel="stylesheet" href="/zyMedia/zy.media.css" />
+    <script src="/zyMedia/zy.media.js"></script>
+    <style type="text/css">
+        ::-webkit-scrollbar {
+            height: 0;
+            width: 0;
+            color: transparent;
+        }
+    </style>
+</head>
+<body>
+
+<div style="margin-left: 40px;margin-right: 40px;margin-top: 30px">
+
+    <blockquote class="layui-elem-quote"><i class="layui-icon layui-icon-read" style="font-size: 20px;">&nbsp;</i><span id="seeTitle"></span></blockquote>
+
+    <div class="layui-bg-gray" style="padding: 30px;">
+
+        <div class="layui-row layui-col-space13">
+            <!--PDF-->
+           <center><iframe  id="pdf" src=""  width="70%" height="600px" style="left: 0px;top: 0px;display: none"></iframe></center>
+
+            <!--视频-->
+            <center>
+            <div style="width: 70%">
+            <div class="zy_media" id="video" style="display: none;">
+                <video poster=""  id="videoPoster">
+                    <source id="sourceId" src="" type="video/mp4">
+                    您的浏览器不支持HTML5视频
+                </video>
+            </div>
+            </div>
+            </center>
+
+
+
+                <!--课程布置-->
+                <div class="layui-tab-content" >
+
+                    <div style="color: #FF5722;margin-top: 5px;float: right;display: inline;"> <span class="layui-badge layui-bg-blue" style="font-size: 13px;font-weight: bolder"><span id="state">无数据</span></span></div>
+                    <h2 style="font-weight: bolder"><span class="layui-badge"><span id="typeSpan">无数据</span></span>&nbsp;
+                        <span id="titleSpan">无数据</span></h2>
+                    <div style="color: #c2c2c2;margin-top: 5px"><span id="schoolSpan">无数据 无数据</span>
+                        <div style="color: #FF5722;margin-top: 5px;float: right;display: inline;"><span id="countSpan" style="font-size: 17px;font-weight: bolder"></span></div>
+                        <br>开设时间：<span id="timeSpan">无数据</span> <br>
+                    </div>
+
+                    <fieldset class="layui-elem-field layui-field-title" style="color: #009688">
+                        <legend><span style="font-size: 15px">课程简介</span></legend>
+                    </fieldset>
+                    &nbsp;&nbsp;<span id="infoSpan">无数据</span>
+
+
+
+                    <fieldset class="layui-elem-field layui-field-title" style="color: #009688">
+                        <legend><span style="font-size: 15px">课后习题</span></legend>
+                    </fieldset>
+                    <form class="layui-form" action="">
+                        <div id="viewPhotos3"></div>
+                        <br>
+
+                    </form>
+
+
+                </div>
+
+
+        </div>
+
+    </div>
+
+
+
+</div>
+
+<script id="scriptPhotos" type="text/html">
+
+
+    {{#  layui.each(d.photosData, function(index, item){   }}
+
+    <i  class="layui-icon layui-icon-delete" style="float: right;display: inline;" onclick="deleteNote({{item.id}})"></i>
+    <img src="../utils/image/headImg/{{item.userId}}.jpg" class="layui-nav-img" style="width: 30px;height: 30px;"><span style="color:#c2c2c2">{{item.username}}</span>
+    <div style="margin-left: 40px">{{item.content}}</div>
+    <span style="color:#c2c2c2;font-size: 10px ;margin-left: 40px;">{{item.noteTime}}</span>
+    <hr  style="margin-left: 40px;">
+
+    {{#  });    }}
+    {{#  if(d.photosData.length === 0){ }}
+    <p>还没有做任何笔记！</p>
+    {{#  } }}
+
+
+</script>
+<script id="scriptPhotos1" type="text/html">
+
+
+    {{#  layui.each(d.photosData, function(index, item){   }}
+
+    <i  class="layui-icon layui-icon-more" style="float: right;display: inline;" ></i>
+    <img src="../utils/image/headImg/{{item.userId}}.jpg" class="layui-nav-img" style="width: 30px;height: 30px;"><span style="color:#c2c2c2">{{item.username}}</span>
+    <div style="margin-left: 40px">{{item.content}}</div>
+    <span style="color:#c2c2c2;font-size: 10px ;margin-left: 40px;">{{item.noteTime}}</span>
+    <div style="float: right;display: inline;">
+        {{#  if(item.collect === 0){ }}
+        <i  class="layui-icon layui-icon-star" onclick="collectNote({{item.id}})">&nbsp; &nbsp;</i>
+        {{#  } else{ }}
+        <i  class="layui-icon layui-icon-star-fill" onclick="noCollectNote({{item.id}})">&nbsp; &nbsp;</i>
+        {{#  } }}
+        <i  class="layui-icon layui-icon-praise" ></i>
+    </div>
+    <hr style="margin-left: 40px;">
+
+    {{#  });    }}
+    {{#  if(d.photosData.length === 0){ }}
+    <p>此课程还没有笔记！</p>
+    {{#  } }}
+
+
+</script>
+<script id="scriptPhotos2" type="text/html">
+
+
+    {{#  layui.each(d.photosData, function(index, item){   }}
+    {{#  if(item.me === 1){ }}
+    <i  class="layui-icon layui-icon-more" style="float: right;display: inline;" onclick="deleteRemark({{item.id}})"></i>
+    {{#  } }}
+    <img src="../utils/image/headImg/{{item.userId}}.jpg" class="layui-nav-img" style="width: 30px;height: 30px;"><span style="color:#c2c2c2">{{item.username}}</span>
+    <div style="margin-left: 40px">{{item.content}}</div>
+    <span style="color:#c2c2c2;font-size: 10px ;margin-left: 40px;">{{item.remarkTime}}</span>
+    <div style="float: right;display: inline;">
+        <i  class="layui-icon layui-icon-praise" ></i>
+    </div>
+    <hr style="margin-left: 40px;">
+
+    {{#  });    }}
+    {{#  if(d.photosData.length === 0){ }}
+    <p>此课程还没有笔记！</p>
+    {{#  } }}
+
+
+</script>
+<script id="scriptPhotos3" type="text/html">
+
+
+    {{#  layui.each(d.photosData, function(index, item){   }}
+    <!--<a href="">-->
+    {{#     var selection = item.selection;
+    var select = selection.split(",");
+    }}
+    <div class="layui-form-item">
+        <div style="font-weight: bolder">{{index+1}}.{{item.title}}</div><br>
+        <div style="margin-left: 15px">&nbsp;A.{{select[0]}}</div>
+        <div style="margin-left: 15px">&nbsp;B.{{select[1]}}</div>
+        <div style="margin-left: 15px">&nbsp;C.{{select[2]}}</div>
+        <div style="margin-left: 15px">&nbsp;D.{{select[3]}}</div>
+        <div style="margin-left: 20px">
+            <input type="radio" name="{{item.id}}" value="A" title="A" >
+            <input type="radio" name="{{item.id}}" value="B" title="B" >
+            <input type="radio" name="{{item.id}}" value="C" title="C" >
+            <input type="radio" name="{{item.id}}" value="D" title="D" >
+        </div>
+        <br>
+        <!--</a>-->
+        {{#  });    }}
+        {{#  if(d.photosData.length === 0){ }}
+        <p>还没有制作任何习题！</p>
+        {{#  } }}
+</script>
+<script>
+
+    function getLastName(str){
+        var fileName = str.lastIndexOf(".");//获取到文件名开始到最后一个“.”的长度。
+        var fileNameLength = str.length;//获取到文件名长度
+
+        var result = str.substring(fileName + 1, fileNameLength);//截取后缀名
+        return result;
+    }
+    //字符串截取方法
+    function cutstr(str, len){
+        var str_length = 0;
+        var str_len = 0;
+        str_cut = new String();
+        str_len = str.length;
+        for (var i = 0; i < str_len; i++) {
+            a = str.charAt(i);
+            str_length++;
+            if (escape(a).length > 4) {
+                //中文字符的长度经编码之后大于4
+                str_length++;
+            }
+            str_cut = str_cut.concat(a);
+            if (str_length >= len) {
+                str_cut = str_cut.concat("..");
+                return str_cut;
+            }
+        }
+        //如果给定字符串小于指定长度，则返回源字符串；
+        if (str_length < len) {
+            return str;
+        }
+    }
+
+    function getLastName(str){
+        var fileName = str.lastIndexOf(".");//获取到文件名开始到最后一个“.”的长度。
+        var fileNameLength = str.length;//获取到文件名长度
+
+        var result = str.substring(fileName + 1, fileNameLength);//截取后缀名
+        return result;
+    }
+
+    layui.use(['dropdown', 'util', 'layer', 'element', 'jquery', 'laytpl', 'form'], function () {
+        var element = layui.element;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        var form = layui.form;
+        var laytpl = layui.laytpl;
+        var util = layui.util;
+
+        //(获得url中参数的方法)
+        function getParamString(paraPart, name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = paraPart.substr(1).match(reg);
+            if (r != null) return decodeURI(r[2]);
+            return null;
+        }
+        function getParamFromUrl(name) {
+            var r = getParamString(window.location.search, name);
+            return r;
+        }
+
+        var courseId = decodeURI(getParamFromUrl('courseId'));
+
+        $.fn.serializeObject = function () {
+            var o = {};
+            var a = this.serializeArray();
+            $.each(a, function () {
+                if (o[this.name]) {
+                    if (!o[this.name].push) {
+                        o[this.name] = [o[this.name]];
+                    }
+                    o[this.name].push(this.value || '');
+                } else {
+                    o[this.name] = this.value || '';
+                }
+            });
+            return o;
+        };
+        //习题请求初始化
+        $.ajax({
+            url: "/getAllTrain?courseId=" +courseId,
+            type: 'GET',
+            dataType: 'json',
+            success: function (res) {
+                if (res.code == 0) {
+                    var result = res;
+                    var selectData = {
+                        "photosData": res.data
+                    };
+                    var getTpl = scriptPhotos3.innerHTML;
+                    var view = document.getElementById('viewPhotos3');
+                    laytpl(getTpl).render(selectData, function (html) {
+                        view.innerHTML = html;
+                    });
+                    form.render();
+                } else {
+                    //layer.msg(res.msg);
+                }
+            }
+        });
+
+        //课程请求初始化
+        $.ajax({
+            url: "/getOneCourse?id=" + courseId,
+            type: 'GET',
+            dataType: 'json',
+            success: function (res) {
+
+                //课程简介初始化
+                document.getElementById("seeTitle").innerText = "正在观赏--" + res.data.title;
+                document.getElementById("typeSpan").innerText = res.data.type;
+                document.getElementById("titleSpan").innerText = res.data.title;
+                if(res.data.reason === "" || res.data.reason === null){
+
+                }else{
+                    document.getElementById("countSpan").innerText = "违规原因:"+res.data.reason;
+                }
+                document.getElementById("schoolSpan").innerText = res.data.school + " " +res.data.author;
+                document.getElementById("timeSpan").innerText = res.data.uploadTime;
+                document.getElementById("infoSpan").innerText = res.data.info;
+                if (res.data.permission === 0){
+                    document.getElementById("state").innerText = "待审核";
+                } else if(res.data.permission === 1){
+                    document.getElementById("state").innerText = "已批准";
+                }else{
+                    document.getElementById("state").innerText = "被驳回";
+                }
+
+                if(getLastName(res.data.url)=== "mp4"){//视频文件 videoPoster
+                    document.getElementById("video").setAttribute("style","display: block");
+                    document.getElementById("sourceId").setAttribute("src" ,res.data.url);
+                    document.getElementById("videoPoster").setAttribute("poster" ,res.data.coverPath);
+                    //zy播放器配置
+                    zymedia('video',{
+                        mediaTitle: "《"+res.data.title+"》--"+res.data.author
+
+                    });
+                }else{//pdf文件
+                    document.getElementById("pdf").setAttribute("style","display: block");
+                    //document.getElementById("pdf").setAttribute("src" ,"http://192.168.1.109:9898/pdfJs/web/viewer.html?file="+res.data.url);
+                    document.getElementById("pdf").setAttribute("src" ,"http://172.20.10.8:9898/pdfJs/web/viewer.html?file="+res.data.url);
+                }
+
+
+            }
+        });
+
+
+
+
+
+
+    });
+
+</script>
+
+</body>
+</html>

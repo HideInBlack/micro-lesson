@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>星系微课堂后台管理</title>
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+    <script src="../res/layui/layui.js"></script>
+    <style type="text/css">
+        ::-webkit-scrollbar {
+            height: 0;
+            width: 0;
+            color: transparent;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin" >
+    <div class="layui-header" style="background-color: #393D49">
+        <div class="layui-logo" style="color: #FBFBFB;font-family: 楷体;font-size: 20px;"><img
+                src="../utils/image/star.png"
+                class="layui-nav-img" style="width: 45px;height: 45px;">星系微课堂
+        </div>
+
+        <!--</ul>-->
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="../utils/image/hnistLogo.png" class="layui-nav-img">
+                    <span id="headName">文学小巨匠</span>
+                </a>
+
+            </li>
+            <li class="layui-nav-item"><a href="/userLogout">退出登录</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black"  >
+        <div class="layui-side-scroll" >
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test" >
+
+                <!--教师目录-->
+                <li class="layui-nav-item" id="myWork"><a href="javascript:;" onclick="setClick('myWork')">
+                    <i class="layui-icon layui-icon-list" style="font-size: 20px;">&nbsp;</i>我的作品</a></li>
+
+                <!--admin目录-->
+                <li class="layui-nav-item" id="checkWork"><a href="javascript:;" onclick="setClick('checkWork')">
+                    <i class="layui-icon layui-icon-survey" style="font-size: 20px;">&nbsp;</i>审核作品发布</a></li>
+                <li class="layui-nav-item" id="manageUser"><a href="javascript:;" onclick="setClick('manageUser')">
+                    <i class="layui-icon layui-icon-username" style="font-size: 20px;">&nbsp;</i>用户权限授权</a></li>
+                <li class="layui-nav-item" id="manageWork"><a href="javascript:;" onclick="setClick('manageWork')">
+                    <i class="layui-icon layui-icon-template-1" style="font-size: 20px;">&nbsp;</i>用户作品管理</a></li>
+
+
+                <li class="layui-nav-item" id="uploadCourse"><a href="javascript:;" onclick="setClick('uploadCourse')">
+                    <i class="layui-icon layui-icon-release" style="font-size: 20px;">&nbsp;</i>新建课程</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body" >
+        <iframe id="body" src="hot" allowtransparency="true" frameborder="no" border="0" onload="changeFrameHeight()"
+                style="width: 87%;position: fixed;top: 60px;overflow:hidden;"></iframe>
+    </div>
+
+</div>
+
+<script th:inline="javascript">
+    //用thymeleaf取到msg信息
+    var data = [[${msg}]];
+
+    //layer弹出层
+    layui.use('layer', function () { //独立版的layer无需执行这一句
+        var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
+
+        if (data != null) {//没有信息时
+            //配置一个透明的询问框
+            layer.msg(data, {
+                time: 2000, //2s后自动关闭
+            });
+        }
+
+
+    });
+</script>
+<script>
+    //页面跳转;
+    function setClick(target) {
+        document.getElementById("body").src = target;
+    }
+    //自适应高度 iframe
+    function changeFrameHeight() {
+        var ifm = document.getElementById("body");
+        ifm.height = document.documentElement.clientHeight - 60;
+    }
+    window.onresize = function () {
+        changeFrameHeight();
+    };
+
+    //layui.JavaScript代码区域
+    layui.use(['dropdown', 'util', 'layer', 'element', 'jquery', 'laytpl', 'form'], function () {
+        var element = layui.element;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+
+        //获取身份role
+        $.ajax({
+            url: "/getRole",
+            type: 'GET',
+            dataType: 'json',
+            success: function (res) {
+                if (res.data.userRole == 0) {//admin管理员权限
+                    document.getElementById("body").src = "checkWork";
+                    document.getElementById("headName").innerText = res.data.userName + "(管理员权限)";
+                    document.getElementById("myWork").setAttribute("style","display: none");
+                }else if(res.data.userRole == 2){//教师权限
+                    document.getElementById("body").src = "myWork";
+                    document.getElementById("headName").innerText = res.data.userName + "(高级UP主权限)";
+                    document.getElementById("checkWork").setAttribute("style","display: none");
+                    document.getElementById("manageUser").setAttribute("style","display: none");
+                    document.getElementById("manageWork").setAttribute("style","display: none");
+                }
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

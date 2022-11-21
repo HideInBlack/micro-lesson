@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dzyown.dao.CourseTrainDao">
+
+    <insert id="addCourseTrain" parameterType="com.dzyown.pojo.CourseTrain">
+        insert into micro.ml_course_train(course_id, type, title, selection, answer)
+        values  (#{courseId},#{type},#{title},#{selection},#{answer})
+    </insert>
+
+    <select id="getAllTrain" resultType="com.dzyown.pojo.CourseTrain">
+        select * from micro.ml_course_train where del = 0  AND   course_id = #{courseId};
+    </select>
+
+    <update id="updateTrain" parameterType="com.dzyown.pojo.CourseTrain">
+            update micro.ml_course_train set   title = #{title},selection = #{selection},answer = #{answer} where id = #{id}
+    </update>
+
+    <update id="deleteTrain" parameterType="com.dzyown.pojo.CourseTrain">
+        update  micro.ml_course_train set  del = 1 where id = #{id}
+    </update>
+
+
+
+
+</mapper>

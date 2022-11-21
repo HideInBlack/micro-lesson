@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>首页课程分类</title>
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+    <script src="../res/layui/layui.js"></script>
+    <script src="../utils/layer.mobile/layer_mobile/layer.js"></script>
+    <style type="text/css">
+        ::-webkit-scrollbar {
+            height: 0;
+            width: 0;
+            color: transparent;
+        }
+    </style>
+</head>
+<body>
+
+<div style="margin: 10px">
+<div style="text-align:center;">
+    <img src="../utils/image/headImg/1.jpg" class="layui-nav-img" style="width: 70px;height: 70px;margin-left: 7px" id="headImg">
+    <div ><span id="userName"></span></div>
+    <div ><span id="email"></span></div>
+    <div style="color:#c2c2c2"><span id="userMotto">这个家伙很懒，并没有设置格言...</span></div>
+    <span style="color:#c2c2c2;font-size: 10px ;"><span id="registerTime"></span></span>
+</div>
+    <i  class="layui-icon layui-icon-logout" onclick="loginOut()" style="float: right;display: inline;font-size: 20px;margin: 10px;font-weight: bolder" ></i>
+
+<hr class="layui-border-black" >
+</div>
+
+
+<div class="layui-panel">
+    <ul class="layui-menu" id="docDemoMenu1">
+
+
+        <a href="javascript:;" onclick="applyFor()" style="display: none" id="apply">
+            <li class="layui-menu-item-parent" lay-options="{type: 'parent'}" >
+                <div class="layui-menu-body-title">
+                    <span style="color: #1E9FFF" >申请up主权限</span>
+                    <i class="layui-icon layui-icon-right"></i>
+                </div>
+            </li>
+        </a>
+        <li class="layui-menu-item-parent" lay-options="{type: 'parent'}" id="applyAll">
+            <div class="layui-menu-body-title">
+                <span style="color: #1E9FFF" id="up">已拥有up主权限</span>
+                <i class="layui-icon layui-icon-right"></i>
+            </div>
+        </li>
+
+        <a href="/myNote">
+            <li class="layui-menu-item-parent" lay-options="{type: 'parent'}" >
+                <div class="layui-menu-body-title">
+                    我的笔记
+                    <i class="layui-icon layui-icon-right"></i>
+                </div>
+            </li>
+        </a>
+        <a href="/myCollect">
+            <li class="layui-menu-item-parent" lay-options="{type: 'parent'}" >
+                <div class="layui-menu-body-title">
+                    收藏笔记
+                    <i class="layui-icon layui-icon-right"></i>
+                </div>
+            </li>
+        </a>
+        <!--<a href="javascript:;">-->
+            <!--<li class="layui-menu-item-parent" lay-options="{type: 'parent'}" >-->
+                <!--<div class="layui-menu-body-title">-->
+                    <!--我的学校-->
+                    <!--<i class="layui-icon layui-icon-right"></i>-->
+                <!--</div>-->
+            <!--</li>-->
+        <!--</a>-->
+
+        <li class="layui-menu-item-divider"></li>
+        <li class="layui-menu-item-group layui-menu-item-down" lay-options="{type: 'group'}">
+            <div class="layui-menu-body-title">
+                我的信息<i class="layui-icon layui-icon-up"></i>
+            </div>
+            <ul>
+                <a href="/mySelf">
+                <li lay-options="{id: 1031}" ><i class="layui-icon layui-icon-username" style="font-size: 22px;"></i>&nbsp;编辑资料</li>
+                </a>
+                <a href="/myPassword">
+                <li lay-options="{id: 1032}" ><i class="layui-icon layui-icon-key" style="font-size: 22px;"></i>&nbsp;密码修改</li>
+                </a>
+            </ul>
+        </li>
+        <li class="layui-menu-item-divider"></li>
+
+    </ul>
+
+</div>
+
+</body>
+
+<script>
+
+    //退出登录
+    function loginOut() {
+        layer.open({
+            content: '您确定要退出吗？',
+            btn: ['退出登录', '取消'],
+            skin: 'footer',
+            yes: function(index) {
+                layer.close(index);
+                top.location.href = "/userLogout";
+            }
+        });
+    }
+
+    layui.use(['dropdown', 'util', 'layer', 'element', 'jquery', 'laytpl', 'form'], function () {
+        var element = layui.element;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        var form = layui.form;
+        var laytpl = layui.laytpl;
+        var util = layui.util;
+        var dropdown = layui.dropdown;
+
+        window.applyFor = function () {
+
+
+            //配置一个透明的询问框
+            layer.msg('申请了up主权限便拥有了创作权限，确定要申请up主权限吗？', {
+                time: 30000, //30s后自动关闭
+                btn: ['确定', '取消'],
+                btnAlign: 'c',
+                id: 'LAY_delete', //设定一个id，防止重复弹出
+                yes: function () {
+                    // layer.msg("申请up主权限");
+                    $.ajax({
+                        url: "/updateUser?role=3",
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (res) {
+                            layer.msg(res.msg);
+                            function jumpUrl() {
+
+                                window.location.reload();
+                            }
+                            setTimeout(jumpUrl, 1500);
+                        }
+                    });
+                }
+            });
+        };
+
+        //我的界面请求初始化
+        $.ajax({
+            url: "/getUserDetail",
+            type: 'GET',
+            dataType: 'json',
+            success: function (res) {
+
+                //个人简介初始化
+                document.getElementById("headImg").setAttribute("src" ,"../utils/image/headImg/"+res.data.id+".jpg");
+                document.getElementById("userName").innerText = res.data.userName;
+                document.getElementById("email").innerText = res.data.email;
+                if (res.data.motto != null) {
+                    document.getElementById("userMotto").innerText = res.data.motto;
+                }
+                document.getElementById("registerTime").innerText = res.data.registerTime;
+                if (res.data.role == 1) {
+                    document.getElementById("apply").setAttribute("style" ,"display:block");
+                    document.getElementById("applyAll").setAttribute("style" ,"display:none");
+                }
+                if (res.data.role == 3) {
+                    document.getElementById("applyAll").setAttribute("style" ,"display:block");
+                    document.getElementById("up").innerText = "正在申请up主权限，请耐心等待";
+                }
+            }
+        });
+    });
+
+</script>
+</html>

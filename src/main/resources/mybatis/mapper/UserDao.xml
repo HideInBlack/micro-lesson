@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dzyown.dao.UserDao">
+
+    <select id="listUser" resultType="com.dzyown.pojo.User">
+        select id,username,sex,email,register_time,memo,role from micro.ml_user where del = 0 and role = 3;
+    </select>
+
+    <select id="getUserByEmail" resultType="com.dzyown.pojo.User">
+        select * from micro.ml_user where email = #{email} and password = #{password} and del = 0;
+    </select>
+
+    <select id="getUserById" resultType="com.dzyown.pojo.User">
+        select * from micro.ml_user where id = #{id} and del = 0 ;
+    </select>
+
+    <insert id="insertUser" parameterType="com.dzyown.pojo.User">
+        insert into micro.ml_user(username, email, password, register_time) values
+        (#{userName},#{email},#{password},#{registerTime})
+    </insert>
+
+    <update id="updateUser" parameterType="com.dzyown.pojo.User">
+        update micro.ml_user set role = #{role}  where id = #{id}
+    </update>
+
+    <update id="updateInfoUser" parameterType="com.dzyown.pojo.User">
+        <if test="memo == 'info'">
+        update micro.ml_user set username = #{userName} , sex =#{sex} ,motto = #{motto} where id = #{id}
+        </if>
+        <if test="memo == 'password'">
+            update micro.ml_user set password = #{password} where id = #{id}
+        </if>
+    </update>
+
+
+</mapper>

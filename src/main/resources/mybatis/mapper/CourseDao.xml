@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dzyown.dao.CourseDao">
+
+    <insert id="addCourse" >
+        insert into micro.ml_course(title, info, school, author, type, upload_id, upload_time, path, cover_path, url)
+        values  (#{title},#{info},#{school},#{author},#{type},#{uploadId},#{uploadTime},#{path},#{coverPath},#{url})
+    </insert>
+
+    <select id="getAllCourse" resultType="com.dzyown.pojo.Course">
+       select * from micro.ml_course where del = 0
+
+        <if test="hot!=null and hot !=''">
+            and permission = 1  order by studying_count  DESC
+            limit 0,8
+        </if>
+
+        <if test="keyWord!='' and keyWord !='' ">
+            and permission = 1
+            and id in
+            (select id from micro.ml_course where
+            title like CONCAT( '%',#{keyWord} ,'%')
+            or author like CONCAT( '%',#{keyWord} ,'%') or school like CONCAT( '%',#{keyWord} ,'%')
+            )
+        </if>
+
+        <if test="check!='' and check !=''">
+            and permission = 0 ;
+        </if>
+
+        <if test="userId!=0">
+            and upload_id = #{userId} ;
+        </if>
+
+    </select>
+
+    <select id="getCourseByType" resultType="com.dzyown.pojo.Course">
+        select * from micro.ml_course where del = 0 and permission = 1 AND   type = #{type} order by studying_count  DESC;
+    </select>
+
+
+    <update id="updateCourse" parameterType="com.dzyown.pojo.Course">
+        <if test="memo!='' and memo=='approve' ">
+            update micro.ml_course set  permission = 1,reason = "" where id = #{id}
+        </if>
+        <if test="memo!='' and memo=='refuse' ">
+            update micro.ml_course set  permission = 2 ,reason = #{reason} where id = #{id}
+        </if>
+        <if test="memo=='' or memo==null">
+            update micro.ml_course set  permission = 0 , title = #{title},author = #{author},info = #{info},type = #{type},
+            school = #{school} where id = #{id}
+        </if>
+
+    </update>
+
+    <update id="deleteCourse" parameterType="com.dzyown.pojo.Course">
+        update  micro.ml_course set  del = 1 where id = #{id}
+    </update>
+
+
+    <select id="getOneCourse" resultType="com.dzyown.pojo.Course">
+        select * from micro.ml_course where id = #{id} and del = 0 ;
+    </select>
+
+    <update id="addOneStudy" parameterType="int">
+        update micro.ml_course set  studying_count = studying_count + 1  where id = #{id}
+    </update>
+
+    <!--操作我正在学习的课程的-->
+    <insert id="addMyLearnCourse" >
+        insert into micro.ml_my_course(user_id, course_id, start_time,memo)
+        values  (#{userId},#{courseId},#{startTime},#{memo})
+    </insert>
+
+    <select id="getMyLearnCourse" resultType="com.dzyown.pojo.Course">
+         select ml_course.* ,ml_my_course.id as learn_id ,ml_my_course.start_time
+         from micro.ml_course ,micro.ml_my_course
+            where ml_course.del = 0 and ml_course.permission = 1 and ml_my_course.del =0
+            and ml_my_course.user_id = #{userId}
+            and ml_my_course.course_id = ml_course.id order by start_time  DESC ;
+    </select>
+
+
+    <update id="deleteMyLearnCourse" parameterType="com.dzyown.pojo.MyCourse">
+
+        <if test="del == 0">
+            update  micro.ml_my_course set  del = 1  where id = #{id}
+        </if>
+        <if test="del == 1">
+            update  micro.ml_my_course set  del = 0 ,start_time = #{startTime} ,memo = #{memo} where id = #{id}
+        </if>
+    </update>
+
+    <select id="checkLearnCourse" resultType="com.dzyown.pojo.MyCourse">
+        select * from micro.ml_my_course where  user_id = #{userId} AND   course_ID = #{courseId}  and del =0;
+    </select>
+
+
+    <select id="chartCourse" resultType="com.dzyown.pojo.ChartCourse">
+        select ml_course.type as name, sum(studying_count) as value from ml_course group by ml_course.type
+    </select>
+
+    <select id="chartLearnCourse" resultType="com.dzyown.pojo.ChartLearnCourse">
+        select ml_my_course.memo as time , COUNT(memo) as value from ml_my_course where user_id=#{userId} group by ml_my_course.memo
+        ORDER BY memo DESC limit 5
+    </select>
+
+</mapper>

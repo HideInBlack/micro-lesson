@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>新建课程</title>
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+    <script src="../res/layui/layui.js"></script>
+    <style type="text/css">
+        ::-webkit-scrollbar {
+            height: 0;
+            width: 0;
+            color: transparent;
+        }
+    </style>
+</head>
+<body>
+
+<div style="margin-left: 40px;margin-right: 40px;margin-top: 30px">
+
+    <blockquote class="layui-elem-quote"><i class="layui-icon layui-icon-release" style="font-size: 20px;">&nbsp;</i>单项课程详细创建</blockquote>
+
+    <div style="margin-left: 150px;margin-right: 150px">
+
+        <form class="layui-form layui-form-pane" action="" id="table_add" lay-filter="filter">
+            <div class="layui-row">
+
+                <div class="layui-col-xs6">
+
+                    <div class="layui-form-item" pane>
+                        <label class="layui-form-label">课程名:</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="title" required lay-verify="required" placeholder="请输入课程名..." autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item" pane>
+                        <label class="layui-form-label">课程概述:</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="info" required lay-verify="required" placeholder="请简单介绍此课程..." autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item" pane>
+                        <label class="layui-form-label">发布院校:</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="school" required lay-verify="required" placeholder="发布院校是..." autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="layui-col-xs6">
+
+                    <div class="layui-form-item" pane>
+                        <label class="layui-form-label">主讲教师:</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="author" required lay-verify="required" placeholder="请输入主讲教师..." autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item" pane>
+                        <label class="layui-form-label">所属类型:</label>
+                        <div class="layui-input-block">
+                            <input type="radio" name="type" value="哲学" title="哲学">
+                            <input type="radio" name="type" value="经济" title="经济" >
+                            <input type="radio" name="type" value="法学" title="法学" >
+                            <input type="radio" name="type" value="教育" title="教育" >
+                            <input type="radio" name="type" value="文学" title="文学" >
+                            <input type="radio" name="type" value="历史" title="历史" >
+                            <input type="radio" name="type" value="理学" title="理学">
+                            <input type="radio" name="type" value="工学" title="工学" checked>
+                            <input type="radio" name="type" value="农学" title="农学" >
+                            <input type="radio" name="type" value="医学" title="医学" >
+                            <input type="radio" name="type" value="管理" title="管理" >
+                            <input type="radio" name="type" value="艺术" title="艺术" >
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </form>
+
+        <p style="margin-top: 10px; color: #666;">文件上传进度:</p>
+            <div style="width:300px;display: inline">
+                <div class="layui-progress layui-progress-big" lay-showpercent="yes" lay-filter="demo">
+                    <div class="layui-progress-bar" lay-percent=""></div>
+                </div>
+            </div>
+        <br>
+        <div class="layui-upload">
+            <button type="button" class="layui-btn layui-btn-normal" id="test8" >选择PDF/视频</button>
+            <button type="button" class="layui-btn" id="test9">开始上传</button>
+        </div>
+        <br>
+
+    </div>
+
+    <blockquote class="layui-elem-quote"><i class="layui-icon layui-icon-release" style="font-size: 20px;">&nbsp;</i>多项课程快捷上传</blockquote>
+
+    <div class="layui-upload">
+
+        <div style="margin-left: 150px;margin-right: 150px">
+
+            <div class="layui-upload-list">
+                <table class="layui-table">
+                    <thead>
+                    <tr>
+                        <th>文件名</th>
+                        <th>大小</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="demoList"></tbody>
+                </table>
+            </div>
+
+                <button type="button" class="layui-btn layui-btn-normal" id="testList">选择多项文件</button>
+                <button type="button" class="layui-btn" id="testListAction">开始上传</button>
+
+        </div>
+    </div>
+
+
+
+</div>
+
+
+</div>
+
+<script>
+    layui.use(['upload', 'form', 'element', 'layer'], function () {
+        var element = layui.element;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        var upload = layui.upload;
+        var form = layui.form;
+        form.render();
+
+        //点击返回事件
+        window.back = function () {
+            window.history.back(-1);//页面重加载-页面返回到上一页
+        };
+
+        //单个图片上传
+        upload.render({
+            elem: '#test8'
+            , accept: 'file' //只允许上传
+            , size: 0 //最大允许上传的文件大小(0表示不限制)
+            , url: '/uploadFile' //改成您自己的上传接口
+            , type: 'POST'
+            , dataType: 'json'
+            , auto: false
+            //,multiple: true
+            , bindAction: '#test9'
+            , before: function (obj) { //巧妙的设置上传图片时带的参数问题！
+                var JSONdata = JSON.parse(JSON.stringify($('#table_add').serializeObject()));
+                this.data = {
+                    "author": JSONdata.author,
+                    "school": JSONdata.school,
+                    "info": JSONdata.info,
+                    "title": JSONdata.title,
+                    "type": JSONdata.type,
+                    "uploadVoid":"单"
+                };
+
+                element.progress('demo', '0%'); //进度条复位
+                layer.msg('上传中', {icon: 16, time: 0});
+            }
+            , done: function (res) {
+
+                if (res.code == 1){
+                    element.progress('demo', '0%'); //进度条复位
+
+                }else{
+                    form.val("filter", {
+                        "author": "",
+                        "school": "",
+                        "info": "",
+                        "title": ""
+                    });
+                }
+                layer.msg(res.msg, {
+                    shade: 0.1,
+                    time: 1500,
+                    offset: '250px'
+                }, function (index) {
+                    layer.closeAll();
+                    //window.history.back(-1);//页面重加载-页面返回到上一页
+                });
+            }
+            //进度条
+            ,progress: function(n, index, e){
+                element.progress('demo', n + '%'); //可配合 layui 进度条元素使用
+                if(n == 100){
+                    layer.msg('上传完毕', {icon: 1});
+                }
+            }
+        });
+
+
+        //多文件列表示例
+        var demoListView = $('#demoList')
+            , uploadListIns = upload.render({
+            elem: '#testList'
+            , url: '/uploadFile?uploadVoid=多'//改成您自己的上传接口
+            , accept: 'file'
+            , multiple: true
+            , auto: false
+            , bindAction: '#testListAction'
+            , choose: function (obj) {
+                var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                //读取本地文件
+                obj.preview(function (index, file, result) {
+                    var tr = $(['<tr id="upload-' + index + '">'
+                        , '<td>' + file.name + '</td>'
+                        , '<td>' + (file.size / 1024 /1024).toFixed(1) + 'M</td>'
+                        , '<td>等待上传</td>'
+                        , '<td>'
+                        , '<button class="layui-btn layui-btn-xs demo-reload layui-hide">重传</button>'
+                        , '<button class="layui-btn layui-btn-xs layui-btn-danger demo-delete">删除</button>'
+                        , '</td>'
+                        , '</tr>'].join(''));
+
+                    //单个重传
+                    tr.find('.demo-reload').on('click', function () {
+                        obj.upload(index, file);
+                    });
+
+                    //删除
+                    tr.find('.demo-delete').on('click', function () {
+                        delete files[index]; //删除对应的文件
+                        tr.remove();
+                        uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                    });
+
+                    demoListView.append(tr);
+                });
+            }
+            , done: function (res, index, upload) {
+                if (res.code == 0) { //上传成功
+                    var tr = demoListView.find('tr#upload-' + index)
+                        , tds = tr.children();
+                    tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
+                    tds.eq(3).html(''); //清空操作
+                    return delete this.files[index]; //删除文件队列已经上传成功的文件
+                }
+                this.error(index, upload);
+            }
+            , error: function (index, upload) {
+                var tr = demoListView.find('tr#upload-' + index)
+                    , tds = tr.children();
+                tds.eq(2).html('<span style="color: #FF5722;">上传失败</span>');
+                tds.eq(3).find('.demo-reload').removeClass('layui-hide'); //显示重传
+            }
+        });
+
+        //获取到表单的内容
+        $.fn.serializeObject = function () {
+            var o = {};
+            var a = this.serializeArray();
+            $.each(a, function () {
+                if (o[this.name]) {
+                    if (!o[this.name].push) {
+                        o[this.name] = [o[this.name]];
+                    }
+                    o[this.name].push(this.value || '');
+                } else {
+                    o[this.name] = this.value || '';
+                }
+            });
+            return o;
+        };
+
+
+    });
+</script>
+
+</body>
+</html>

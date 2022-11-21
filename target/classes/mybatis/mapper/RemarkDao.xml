@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dzyown.dao.RemarkDao">
+
+
+
+    <select id="getAllNotesByRemark" resultType="com.dzyown.pojo.Remark">
+        select micro.ml_remark.*,ml_user.username ,if(ml_remark.user_id =3,1,0) as me
+        from micro.ml_remark  , micro.ml_user
+        where ml_remark.del = 0
+        and user_id = ml_user.id
+
+        <if test="userId==-1">
+            and course_id = #{courseId}
+        </if>
+        <if test="userId!=-1">
+            and user_id = #{userId} and course_id = #{courseId}
+        </if>
+        order by id  DESC limit 0,50;
+    </select>
+
+
+    <insert id="addRemark" parameterType="com.dzyown.pojo.Remark">
+        insert into micro.ml_remark(course_id, user_id, content, remark_time)
+        values  (#{courseId},#{userId},#{content},#{remarkTime})
+    </insert>
+
+
+    <update id="deleteRemark" parameterType="com.dzyown.pojo.Remark">
+        update  micro.ml_remark set  del = 1 where id = #{id}
+    </update>
+
+    <insert id="goodRemark" parameterType="com.dzyown.pojo.Remark" >
+        insert into micro.ml_note_collect(note_id, user_id, collect_time)
+        values  (#{noteId},#{userId},#{collectTime})
+    </insert>
+
+    <update id="NoGoogRemark" parameterType="com.dzyown.pojo.Remark">
+        update micro.ml_note_collect set  del = 1  where id = #{id}
+    </update>
+
+
+</mapper>

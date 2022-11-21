@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>我的笔记</title>
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+    <script src="../res/layui/layui.js"></script>
+    <style type="text/css">
+        ::-webkit-scrollbar {
+            height: 0;
+            width: 0;
+            color: transparent;
+        }
+    </style>
+</head>
+<body>
+<div style="margin-left: 10px;margin-right: 10px;margin-top: 10px">
+
+
+
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend><i class="layui-icon layui-icon-survey" style="font-size: 22px;"></i>&nbsp;<span style="font-size: 16px">我的笔记</span></legend>
+    </fieldset>
+
+    <div id="viewPhotos"></div>
+
+</div>
+</body>
+<script id="scriptPhotos" type="text/html">
+
+
+    {{#  layui.each(d.photosData, function(index, item){   }}
+
+    <i  class="layui-icon layui-icon-delete" style="float: right;display: inline;" onclick="deleteNote({{item.id}})"></i>
+    <img src="../utils/image/headImg/{{item.userId}}.jpg" class="layui-nav-img" style="width: 30px;height: 30px;"><span style="color:#c2c2c2">{{item.username}}</span>
+    <div style="margin-left: 40px">{{item.content}}</div>
+    <span style="color:#c2c2c2;font-size: 10px ;margin-left: 40px;">{{item.noteTime}}</span>
+
+    <a href="/mp4?courseId={{ item.courseId }}">
+        <div style="margin-left: 40px">
+        <div class="layui-col-xs6">
+            <div class="layui-card" >
+                    <img src="{{ item.coverPath }}" style="width: 88% ;height: 80px;margin-top: 8px;margin-left: 8px;">
+            </div>
+        </div>
+
+        <div class="layui-col-xs6">
+            <div class="layui-card">
+                <div class="layui-card-header"  ><span style="font-size: 10px;">《{{ cutstr(item.title,14) }}》</span></div>
+                <div class="layui-card-body" style="height: 28px">
+                    <span style="font-size: 10px;">{{ cutstr(item.author,16)  }}</span>
+                </div>
+            </div>
+        </div>
+        </div>
+    </a>
+
+    <hr  style="margin-left: 40px;">
+
+    {{#  });    }}
+    {{#  if(d.photosData.length === 0){ }}
+    <p>还没有做任何笔记！</p>
+    {{#  } }}
+
+
+</script>
+<script>
+
+    //字符串截取方法
+    function cutstr(str, len){
+        var str_length = 0;
+        var str_len = 0;
+        str_cut = new String();
+        str_len = str.length;
+        for (var i = 0; i < str_len; i++) {
+            a = str.charAt(i);
+            str_length++;
+            if (escape(a).length > 4) {
+                //中文字符的长度经编码之后大于4
+                str_length++;
+            }
+            str_cut = str_cut.concat(a);
+            if (str_length >= len) {
+                str_cut = str_cut.concat("..");
+                return str_cut;
+            }
+        }
+        //如果给定字符串小于指定长度，则返回源字符串；
+        if (str_length < len) {
+            return str;
+        }
+    }
+    layui.use(['dropdown', 'util', 'layer', 'element', 'jquery', 'laytpl', 'form'], function () {
+        var element = layui.element;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        var form = layui.form;
+        var laytpl = layui.laytpl;
+        var util = layui.util;
+        form.render();
+
+        //我的笔记请求初始化
+        $.ajax({
+            url: "/getMyAllNotes",
+            type: 'GET',
+            dataType: 'json',
+            success: function (res) {
+                if (res.code == 0) {
+                    var selectData = {
+                        "photosData": res.data
+                    };
+                    var getTpl = scriptPhotos.innerHTML;
+                    var view = document.getElementById('viewPhotos');
+                    laytpl(getTpl).render(selectData, function (html) {
+                        view.innerHTML = html;
+                    });
+                } else {
+                    //layer.msg(res.msg);
+                }
+            }
+        });
+
+        $.fn.serializeObject = function () {
+            var o = {};
+            var a = this.serializeArray();
+            $.each(a, function () {
+                if (o[this.name]) {
+                    if (!o[this.name].push) {
+                        o[this.name] = [o[this.name]];
+                    }
+                    o[this.name].push(this.value || '');
+                } else {
+                    o[this.name] = this.value || '';
+                }
+            });
+            return o;
+        };
+
+        //删除笔记的事件
+        window.deleteNote = function(id){
+
+            $.ajax({
+                url: "/deleteNote",
+                type: 'POST',
+                data: {
+                    "id":id
+                },
+                dataType: 'json',
+                success: function (res) {
+                    layer.msg(res.msg);
+
+                    //我的笔记请求初始化
+                    $.ajax({
+                        url: "/getMyAllNotes",
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.code == 0) {
+                                var selectData = {
+                                    "photosData": res.data
+                                };
+                                var getTpl = scriptPhotos.innerHTML;
+                                var view = document.getElementById('viewPhotos');
+                                laytpl(getTpl).render(selectData, function (html) {
+                                    view.innerHTML = html;
+                                });
+                            } else {
+                                //layer.msg(res.msg);
+                            }
+                        }
+                    });
+
+                }
+            });
+        };
+
+
+    });
+</script>
+
+</html>

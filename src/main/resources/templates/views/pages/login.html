@@ -1,0 +1,451 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0"> 
+	<title>登录界面</title>
+    <link th:href="@{/login/css/default.css}" rel="stylesheet" type="text/css" />
+	<!--必要样式-->
+    <link th:href="@{/login/css/styles.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/login/css/demo.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/login/css/loaders.css}" rel="stylesheet" type="text/css" />
+	<style type="text/css">
+		body .myskin{
+			background-color: transparent;/*背景透明*/
+			box-shadow: 0 0 0 rgba(0,0,0,0);/*前景无阴影*/
+		}
+	</style>
+</head>
+<body>
+	<div class='login'>
+	  <div class='login_title'>
+	    <span>星系微课登录</span>
+	  </div>
+	  <div class='login_fields'>
+	    <div class='login_fields__user'>
+	      <div class='icon'>
+	        <img alt="" src='/login/img/user_icon_copy.png'>
+	      </div>
+	      <input name="login" placeholder='邮箱' maxlength="20" type='text' autocomplete="off"  />
+	        <div class='validation'>
+	          <img alt="" src='/login/img/tick.png'>
+	        </div>
+	    </div>
+	    <div class='login_fields__password'>
+	      <div class='icon'>
+	        <img alt="" src='/login/img/lock_icon_copy.png'>
+	      </div>
+	      <input name="pwd" placeholder='密码' maxlength="16" type='text' autocomplete="off">
+	      <div class='validation'>
+	        <img alt="" src='/login/img/tick.png'>
+	      </div>
+	    </div>
+	    <div class='login_fields__password'>
+	      <div class='icon'>
+	        <img alt="" src='/login/img/key.png'>
+	      </div>
+	      <input name="code" placeholder='验证码' maxlength="4" type='text' autocomplete="off">
+	      <div class='validation' style="opacity: 1; right: -5px;top: -3px;">
+          <canvas class="J_codeimg" id="myCanvas" onclick="Code();">对不起，您的浏览器不支持canvas，请下载最新版浏览器!</canvas>
+	      </div>
+	    </div>
+	    <div class='login_fields__submit'>
+	      <input type='button' value='登录'>
+	    </div>
+	  </div>
+	  <div class='success'>
+	  </div>
+	  <div class='disclaimer'>
+	    <p style="float: right">没有账号？ <button 	class="layui-btn layui-btn-radius layui-btn-normal" onclick="register()" style="background: transparent;font-size: 13px;color: #1E9FFF">立即注册</button></p>
+	  </div>
+	</div>
+	<div class='authent'>
+	  <div class="loader" style="height: 44px;width: 44px;margin-left: 28px;">
+        <div class="loader-inner ball-clip-rotate-multiple">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        </div>
+	  <p>认证中...</p>
+	</div>
+	<div class="OverWindows"></div>
+
+	<link rel="stylesheet" th:href="@{../res/layui/css/layui.css}">
+	<script th:src="@{../res/layui/layui.js}"></script>
+	<script type="text/javascript" th:src="@{/login/js/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/login/js/jquery-ui.min.js}"></script>
+	<script type="text/javascript" th:src='@{/login/js/stopExecutionOnTimeout.js?t=1}'></script>
+    <script type="text/javascript" th:src="@{/login/js/Particleground.js}"></script>
+    <script type="text/javascript" th:src="@{/login/js/Treatment.js}"></script>
+    <script type="text/javascript" th:src="@{/login/js/jquery.mockjax.js}"></script>
+	<script th:inline="javascript">
+        //用thymeleaf取到msg信息
+        var data = [[${msg}]];
+
+        //layer弹出层
+        layui.use('layer', function () { //独立版的layer无需执行这一句
+            var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
+
+            if (data == null) {//没有信息时
+                layer.msg('欢迎来到星系微课堂！希望你在此<br>学无止境', {
+                    time: 2000 //2s后自动关闭
+                });
+            } else {
+                layer.msg(data);
+                function jumpUrl() {
+                    top.location.href = "/login";
+                }
+                setTimeout(jumpUrl, 1000);
+            }
+
+        });
+	</script>
+	<script type="text/javascript">
+		var canGetCookie = 0;//是否支持存储Cookie 0 不支持 /1 支持
+		var ajaxmockjax = 1;//是否启用虚拟Ajax的请求响 0 不启用  1 启用
+		//默认账号密码
+
+		var CodeVal = 0;
+	    Code();
+	    function Code() {
+			if(canGetCookie == 1){
+				createCode("AdminCode");
+				var AdminCode = getCookieValue("AdminCode");
+				showCheck(AdminCode);
+			}else{
+				showCheck(createCode(""));
+			}
+	    }
+	    function showCheck(a) {
+			CodeVal = a;
+	        var c = document.getElementById("myCanvas");
+	        var ctx = c.getContext("2d");
+	        ctx.clearRect(0, 0, 1000, 1000);
+	        ctx.font = "80px 'Hiragino Sans GB'";
+	        ctx.fillStyle = "#E8DFE8";
+	        ctx.fillText(a, 0, 100);
+	    }
+	    $(document).keypress(function (e) {
+	        // 回车键事件  
+	        if (e.which == 13) {
+	            $('input[type="button"]').click();
+	        }
+	    });
+	    //粒子背景特效
+	    $('body').particleground({
+	        dotColor: '#E8DFE8',
+            lineColor: '#009688'
+	      //  lineColor: '#133b88'
+	    });
+	    $('input[name="pwd"]').focus(function () {
+	        $(this).attr('type', 'password');
+	    });
+	    $('input[type="text"]').focus(function () {
+	        $(this).prev().animate({ 'opacity': '1' }, 200);
+	    });
+	    $('input[type="text"],input[type="password"]').blur(function () {
+	        $(this).prev().animate({ 'opacity': '.5' }, 200);
+	    });
+	    $('input[name="login"],input[name="pwd"]').keyup(function () {
+	        var Len = $(this).val().length;
+	        if (!$(this).val() == '' && Len >= 5) {
+	            $(this).next().animate({
+	                'opacity': '1',
+	                'right': '30'
+	            }, 200);
+	        } else {
+	            $(this).next().animate({
+	                'opacity': '0',
+	                'right': '20'
+	            }, 200);
+	        }
+	    });
+	    var open = 0;
+        //改变验证码按钮的事件
+        function settime($obj, time) {
+            if (time == 0) {
+                $obj.attr("disabled", false);
+                $obj.css("background", "#f38401").css("cursor", "pointer");
+                $obj.text("获取验证码");
+                return;
+            } else {
+                $obj.attr("disabled", true);
+                $obj.css("background", "#ccc").css("cursor", "noe-allowed");
+                $obj.text("重新发送(" + time + ")");
+                time--;
+            }
+            setTimeout(function() {
+                settime($obj, time)
+            }, 1000);
+        }
+        layui.use(['element', 'form', 'layer'], function() {
+            var element = layui.element;
+            var form = layui.form;
+            var layer = layui.layer;
+            form.render();
+
+	        //非空验证
+	        $('input[type="button"]').click(function () {
+	            var login = $('input[name="login"]').val();
+	            var pwd = $('input[name="pwd"]').val();
+	            var code = $('input[name="code"]').val();
+	            if (login == '') {
+	                ErroAlert('请输入您的账号');
+	            } else if (pwd == '') {
+	                ErroAlert('请输入密码');
+	            } else if (code == '' || code.length != 4) {
+	                ErroAlert('输入验证码');
+	            } else {
+	                //认证中..
+	                fullscreen();
+	                $('.login').addClass('test'); //倾斜特效
+	                setTimeout(function () {
+	                    $('.login').addClass('testtwo'); //平移特效
+	                }, 300);
+	                setTimeout(function () {
+	                    $('.authent').show().animate({ right: -320 }, {
+	                        easing: 'easeOutQuint',
+	                        duration: 600,
+	                        queue: false
+	                    });
+	                    $('.authent').animate({ opacity: 1 }, {
+	                        duration: 200,
+	                        queue: false
+	                    }).addClass('visible');
+	                }, 500);
+
+	                //登录
+	                var JsonData = { login: login, pwd: pwd, code: code };
+					//此处做为ajax内部判断
+					var url = "";
+					if(JsonData.code.toUpperCase() == CodeVal.toUpperCase()){
+
+                        //登录请求
+                        $.ajax({
+                            url: "/userToLogin",
+                            type: 'POST',
+                            data: {
+                                "email": JsonData.login,
+                                "password": JsonData.pwd
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                                //ajax返回
+                                //认证完成
+                                setTimeout(function () {
+                                    $('.authent').show().animate({ right: 90 }, {
+                                        easing: 'easeOutQuint',
+                                        duration: 600,
+                                        queue: false
+                                    });
+                                    $('.authent').animate({ opacity: 0 }, {
+                                        duration: 200,
+                                        queue: false
+                                    }).addClass('visible');
+                                    $('.login').removeClass('testtwo'); //平移特效
+                                }, 2000);
+                                setTimeout(function () {
+                                    $('.authent').hide();
+                                    $('.login').removeClass('test');
+                                    if (data.code == 0 ) {
+                                        //登录成功
+                                        $('.login div').fadeOut(100);
+                                        $('.success').fadeIn(1000);
+                                        if (data.count == 6) {//教师选择界面
+                                            $('.success').html(data.msg + '<center><div style="margin-top: 30px">\n' +
+                                                '<a href="/indexWeb"><button type="button" \tclass="layui-btn layui-btn-radius layui-btn-normal" >web管理</button></a>&nbsp;&nbsp;&nbsp;\n' +
+                                                '<a href="/index"><button type="button" \tclass="layui-btn layui-btn-radius" >APP应用</button></a>\n' +
+                                                '</center></div>');
+										}else{
+                                            $('.success').html(data.msg);
+                                            //跳转操作
+                                            setTimeout(function () {
+                                                window.location.href = data.data
+                                            }, 2400);
+										}
+                                    } else {
+                                        layer.msg(data.msg);
+                                    }
+                                }, 2200);
+                            }
+                        });
+
+					}else{//验证码错误
+                                setTimeout(function () {
+                                    $('.authent').show().animate({ right: 90 }, {
+                                        easing: 'easeOutQuint',
+                                        duration: 600,
+                                        queue: false
+                                    });
+                                    $('.authent').animate({ opacity: 0 }, {
+                                        duration: 200,
+                                        queue: false
+                                    }).addClass('visible');
+                                    $('.login').removeClass('testtwo'); //平移特效
+                                }, 2000);
+                                setTimeout(function () {
+                                    $('.authent').hide();
+                                    $('.login').removeClass('test');
+									layer.msg("请输入正确的验证码！");
+
+                                }, 2200);
+
+					}
+
+
+
+
+	            }
+	        })
+	    });
+	    var fullscreen = function () {
+	        elem = document.body;
+	        if (elem.webkitRequestFullScreen) {
+	            elem.webkitRequestFullScreen();
+	        } else if (elem.mozRequestFullScreen) {
+	            elem.mozRequestFullScreen();
+	        } else if (elem.requestFullScreen) {
+	            elem.requestFullscreen();
+	        } else {
+	            //浏览器不支持全屏API或已被禁用  
+	        }
+	    };
+
+        //获取验证码
+        window.getSureCode = function() {
+
+            var JSONdata = JSON.parse(JSON.stringify($('#table_add').serializeObject()));
+            if (JSONdata.email.trim() == "") {
+                layer.msg("请先输入邮箱");
+            } else {
+                settime($("#sureCode"), 60);
+                $.ajax({
+                    url: "/sendSureCode",
+                    type: 'POST',
+                    data: {
+                        "email": JSONdata.email
+                    },
+                    dataType: 'json',
+                    success: function(res) {
+                        layer.msg(res.msg);
+                    }
+                });
+            }
+        };
+
+
+        //点击注册的事件
+        window.register = function() {
+            layer.open({
+                type: 1,
+                title: '用户注册', //标题栏
+                anim: 4,
+                skin: 'myskin',
+                closeBtn: false,
+                area: ['300px', '380px'],
+                shade: 0.1,
+                id: 'LAY_layuipro', //设定一个id，防止重复弹出
+                btn: ['提交', '关闭'],
+                btnAlign: 'c',
+                moveType: 1, //拖拽模式，0或者1
+                content: '<div style="margin-left: 10px;margin-right: 10px; margin-top: 20px" >' +
+                '<form class="layui-form layui-form-pane" action="" id="table_add" lay-filter="form_add">' +
+                '<div class="layui-form-item" pane>' +
+                '<label class="layui-form-label">名称</label>' +
+                '<div class="layui-input-block">' +
+                '<input type="text" name="name" required  lay-verify="required" placeholder="输入昵称" autocomplete="off" class="layui-input">' +
+                '</div>' +
+                ' </div>' +
+
+                '<div class="layui-form-item" pane>' +
+                '<label class="layui-form-label">账号</label>' +
+                '<div class="layui-input-block">' +
+                '<input type="text" name="email" required  lay-verify="required" placeholder="支持邮箱" autocomplete="off" class="layui-input">' +
+                '</div>' +
+                ' </div>' +
+                '<div class="layui-form-item" pane>' +
+                '<label class="layui-form-label">密码</label>' +
+                '<div class="layui-input-block">' +
+                '<input name="passwordre" required  lay-verify="required" placeholder="输入密码" type="password" autocomplete="off" class="layui-input">' +
+                '</div>' +
+                ' </div>' +
+                '<div class="layui-form-item" pane>' +
+                '<label class="layui-form-label">验证码</label>' +
+                '<div class="layui-input-block">' +
+                '<input type="text" name="sureCode"  required  lay-verify="required" placeholder="获得验证码" autocomplete="off" class="layui-input">' +
+                '</div>' +
+                ' </div>' +
+
+                '<button type="button"	class="layui-btn layui-btn-sm layui-btn-radius layui-btn-normal layui-btn-fluid " id="sureCode" onclick="getSureCode()" >获取验证码</button>' +
+
+                '  </form>' +
+                '</div>',
+                success: function() {
+                    // form.render();
+                 },
+                yes: function() {
+                    var JSONdata = JSON.parse(JSON.stringify($('#table_add').serializeObject()));
+                    if (JSONdata.name == "" || JSONdata.email == "" || JSONdata.passwordre == "" || JSONdata.sureCode == "") {
+                        layer.msg("请先完善必需信息！");
+                    } else {
+                        $.ajax({
+                            url: "/userRegister",
+                            type: 'POST',
+                            data: {
+                                "userName": JSONdata.name,
+                                "email": JSONdata.email,
+                                "password": JSONdata.passwordre,
+                                "sureCode": JSONdata.sureCode
+                            },
+                            dataType: 'json',
+                            success: function(res) {
+                                if (res.code == 0) {
+                                    layer.msg(res.msg, {
+                                        shade: 0.1,
+                                        time: 2000, //5s后自动关闭
+                                        btn: '知道了',
+                                        btnAlign: 'c' //按钮居中
+                                    }, function(index) {
+                                        layer.close(index);
+                                        layer.closeAll();
+                                    });
+                                } else {
+                                    layer.msg(res.msg);
+                                }
+                            }
+                        });
+                    }
+
+                }
+            });
+        }
+    </script>
+
+<script type="application/javascript">
+    //获取到表单的内容
+    $.fn.serializeObject = function () {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function () {
+            if (o[this.name]) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
+</script>
+</body>
+</html>

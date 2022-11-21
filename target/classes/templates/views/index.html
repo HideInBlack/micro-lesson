@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>微课堂开课啦</title>
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+    <script src="../res/layui/layui.js"></script>
+    <script src="../utils/layer.mobile/layer_mobile/layer.js"></script>
+
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header" style="background: #2F4056;">
+        <div class="layui-logo" style="color: #FBFBFB;font-family: 楷体;font-size: 20px;"><img src="../utils/image/star.png" class="layui-nav-img" style="width: 45px;height: 45px;">星系微课</div>
+
+        <ul class="layui-nav layui-layout-right" style="margin-top: 20px">
+            <div class="demoTable" style="display: inline;" id="search">
+
+                <div class="layui-inline"  >
+                    <input class="layui-input" name="id" id="demoReload" autocomplete="off" style="width:100px;height: 20px" placeholder="搜索">
+                </div>
+                <button class="layui-btn layui-btn-xs layui-btn-normal"  onclick="search()">
+                    <i class="layui-icon layui-icon-search" ></i></button>
+            </div>
+
+            <!--<li class="layui-nav-item" onclick="loginOut()">&nbsp;退出</li>-->
+        </ul>
+    </div>
+
+    <div>
+        <!-- style="height: 523px;width: 100%;" -->
+        <iframe id="body" src="home" frameborder="no" border="0" onload="changeFrameHeight()" style="width: 100%;position: fixed;top: 60px;"></iframe>
+    </div>
+
+    <ul class="site-doc-icon site-doc-anim layui-nav" lay-filter="" style="position: fixed;bottom: 0;width: 100%;background: #2F4056;height: 53px;">
+        <li class="layui-nav-item" style="width: 25%;"><a href="javascript:;" onclick="setClick('doing')">
+            <div class="layui-anim" data-anim="layui-anim-up"><i class="layui-icon layui-icon-list" style="font-size: 26px;"></i></div>
+        </a></li>
+        <!--<li class="layui-nav-item" style="width: 20%;"><a href="javascript:;" onclick="setClick('hot')">-->
+            <!--<div class="layui-anim" data-anim="layui-anim-up"><i class="layui-icon layui-icon-fire" style="font-size: 26px;"></i></div>-->
+        <!--</a></li>-->
+        <li class="layui-nav-item layui-this" style="width: 25%;"><a href="javascript:;" onclick="setClick('home')">
+            <div class="layui-anim" data-anim="layui-anim-up"><i class="layui-icon layui-icon-home" style="font-size: 26px;"></i></div>
+        </a></li>
+        <li class="layui-nav-item" style="width: 25%;"><a href="javascript:;" onclick="setClick('chart')">
+            <div class="layui-anim" data-anim="layui-anim-up"><i class="layui-icon layui-icon-chart-screen" style="font-size: 26px;"></i></div>
+        </a></li>
+        <li class="layui-nav-item" style="width: 25%;"><a href="javascript:;" onclick="setClick('mine')">
+            <div class="layui-anim" data-anim="layui-anim-up"><i class="layui-icon layui-icon-username" style="font-size: 26px;"></i></div>
+        </a></li>
+    </ul>
+</div>
+
+<script>
+    //自适应高度 iframe
+    function changeFrameHeight() {
+        var ifm = document.getElementById("body");
+        ifm.height = document.documentElement.clientHeight-113;
+    }
+    window.onresize = function() {
+        changeFrameHeight();
+    };
+
+    function setClick(target) {
+        document.getElementById("body").src = target;
+    }
+    //layui.JavaScript代码区域
+    layui.use(['element', 'jquery'], function() {
+        var element = layui.element;
+        var $ = layui.$;
+
+        //演示动画
+        $('.site-doc-icon .layui-anim').on('click', function() {
+            var othis = $(this),
+                anim = othis.data('anim');
+            //停止循环
+            if (othis.hasClass('layui-anim-loop')) {
+                return othis.removeClass(anim);
+            }
+            othis.removeClass(anim);
+            setTimeout(function() {
+                othis.addClass(anim);
+            });
+            //恢复渐隐
+            if (anim === 'layui-anim-fadeout') {
+                setTimeout(function() {
+                    othis.removeClass(anim);
+                }, 1300);
+            }
+        });
+
+        //注册搜索事件
+        window.search = function () {
+            document.getElementById("body").src = 'search?keyWord='+ document.getElementById("demoReload").value;
+        }
+
+    });
+</script>
+</body>
+
+</html>

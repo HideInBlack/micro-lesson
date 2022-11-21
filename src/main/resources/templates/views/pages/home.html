@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>首页课程分类</title>
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+    <script src="../res/layui/layui.js"></script>
+    <style type="text/css">
+        ::-webkit-scrollbar {
+            height: 0;
+            width: 0;
+            color: transparent;
+        }
+    </style>
+</head>
+<body>
+
+<div style="margin-left: 10px;margin-right: 10px;margin-top: 10px">
+
+    <div class="layui-carousel" id="test10">
+        <div carousel-item="">
+
+            <div><a href="/mp4?courseId=46"><img src="../utils/image/gongxue/工建筑学1.jpg" style="width: 100%;height: 100%"></a></div>
+            <div><a href="/mp4?courseId=46"><img src="../utils/image/gongxue/工建筑学2.jpg" style="width: 100%;height: 100%"></a></div>
+
+            <div><a href="/mp4?courseId=46"><img src="../utils/image/con1.png" style="width: 100%;height: 100%"></a></div>
+            <div><a href="/mp4?courseId=46"><img src="../utils/image/con2.png" style="width: 100%;height: 100%"></a></div>
+            <!--<div><a href="/mp4?courseId=46"><img src="../utils/image/con3.png" style="width: 100%;height: 100%"></a></div>-->
+            <!--<div><a href="/mp4?courseId=46"><img src="../utils/image/con4.png" style="width: 100%;height: 100%"></a></div>-->
+            <!--<div><a href="/mp4?courseId=46"><img src="../utils/image/con5.png" style="width: 100%;height: 100%"></a></div>-->
+        </div>
+    </div>
+
+    <center>
+        <div class="layui-row" style="font-size: 10px;margin-top: 10px;margin-right: 14px" >
+            <div class="layui-col-xs2" >
+                <button type="button" onclick="linkType('哲学')" class="layui-btn layui-btn-primary layui-btn-md" style="border: 1px solid white;background-color: transparent;">
+                    <i class="layui-icon layui-icon-template" style="color: #FF5722;font-size: 30px;"></i>
+                </button>
+                <div class="grid-demo grid-demo-bg1" style="margin-left: 14px">哲学</div>
+            </div>
+            <div class="layui-col-xs2">
+                <button type="button" onclick="linkType('经济')" class="layui-btn layui-btn-primary layui-btn-md" style="border: 1px solid white;background-color: transparent">
+                    <i class="layui-icon layui-icon-rmb" style="color: #FF5722;font-size: 30px"></i>
+                </button>
+                <div class="grid-demo" style="margin-left: 14px">经济</div>
+            </div>
+            <div class="layui-col-xs2">
+                <button type="button" onclick="linkType('法学')" class="layui-btn layui-btn-primary layui-btn-md" style="border: 1px solid white;background-color: transparent">
+                    <i class="layui-icon layui-icon-vercode" style="color: #FF5722;font-size: 30px"></i>
+                </button>
+                <div class="grid-demo grid-demo-bg1" style="margin-left: 14px">法学</div>
+            </div>
+            <div class="layui-col-xs2">
+                <button type="button" onclick="linkType('教育')" class="layui-btn layui-btn-primary layui-btn-md" style="border: 1px solid white;background-color: transparent">
+                    <i class="layui-icon layui-icon-service" style="color: #FF5722;font-size: 30px"></i>
+                </button>
+                <div class="grid-demo" style="margin-left: 14px">教育</div>
+            </div>
+            <div class="layui-col-xs2">
+                <button type="button" onclick="linkType('文学')" class="layui-btn layui-btn-primary layui-btn-md" style="border: 1px solid white;background-color: transparent">
+                    <i class="layui-icon layui-icon-read" style="color: #FF5722;font-size: 30px"></i>
+                </button>
+                <div class="grid-demo grid-demo-bg1" style="margin-left: 14px">文学</div>
+            </div>
+            <div class="layui-col-xs2">
+                <button type="button" onclick="linkType('历史')" class="layui-btn layui-btn-primary layui-btn-md" style="border: 1px solid white;background-color: transparent">
+                    <i class="layui-icon layui-icon-time" style="color: #FF5722;font-size: 30px"></i>
+                </button>
+                <div class="grid-demo" style="margin-left: 14px">历史</div>
+            </div>
+        </div>
+
+    <div class="layui-row" style="font-size: 9px;margin-right: 14px">
+        <div class="layui-col-xs2">
+            <!--9 4 0 0 6 10-->
+            <button type="button" onclick="linkType('理学')" class="layui-btn layui-btn-primary layui-btn-md" style="border: 1px solid white;background-color: transparent">
+                <i class="layui-icon layui-icon-component" style="color: #FF5722;font-size: 30px"></i>
+            </button>
+            <div class="grid-demo grid-demo-bg1" style="margin-left: 14px" >理学</div>
+        </div>
+        <div class="layui-col-xs2">
+            <button type="button" onclick="linkType('工学')" class="layui-btn layui-btn-primary layui-btn-md" style="border: 1px solid white;background-color: transparent">
+                <i class="layui-icon layui-icon-code-circle" style="color: #FF5722;font-size: 30px"></i>
+            </button>
+            <div class="grid-demo" style="margin-left: 14px" >工学</div>
+        </div>
+        <div class="layui-col-xs2">
+            <button type="button" onclick="linkType('农学')" class="layui-btn layui-btn-primary layui-btn-md" style="border: 1px solid white;background-color: transparent">
+                <i class="layui-icon layui-icon-snowflake" style="color: #FF5722;font-size: 30px"></i>
+            </button>
+            <div class="grid-demo grid-demo-bg1" style="margin-left: 14px">农学</div>
+        </div>
+        <div class="layui-col-xs2">
+            <button type="button" onclick="linkType('医学')" class="layui-btn layui-btn-primary layui-btn-md" style="border: 1px solid white;background-color: transparent">
+                <i class="layui-icon layui-icon-chart" style="color: #FF5722;font-size: 30px"></i>
+            </button>
+            <div class="grid-demo" style="margin-left: 14px">医学</div>
+        </div>
+        <div class="layui-col-xs2">
+            <button type="button" onclick="linkType('管理')" class="layui-btn layui-btn-primary layui-btn-md" style="border: 1px solid white;background-color: transparent">
+                <i class="layui-icon layui-icon-app" style="color: #FF5722;font-size: 30px"></i>
+            </button>
+            <div class="grid-demo grid-demo-bg1"  style="margin-left: 14px">管理</div>
+        </div>
+        <div class="layui-col-xs2">
+            <button type="button" onclick="linkType('艺术')" class="layui-btn layui-btn-primary layui-btn-md" style="border: 1px solid white;background-color: transparent">
+                <i class="layui-icon layui-icon-tree" style="color: #FF5722;font-size: 30px"></i>
+            </button>
+            <div class="grid-demo" style="margin-left: 14px">艺术</div>
+        </div>
+    </div>
+    </center>
+    <blockquote class="layui-elem-quote" style="margin-top: 5px" ><i class="layui-icon layui-icon-home" style="font-size: 15px;">&nbsp;</i>热门课程排行</blockquote>
+
+    <div style="padding: 5px;background-color:#e2e2e2">
+
+                <div class="layui-row layui-col-space13">
+
+                    <div id="viewPhotos"></div>
+
+                </div>
+    </div>
+
+
+
+</div>
+<script id="scriptPhotos" type="text/html">
+
+
+    {{#  layui.each(d.photosData, function(index, item){   }}
+    <a href="/mp4?courseId={{ item.id }}">
+        <div class="layui-col-xs6">
+            <span style="position:absolute; z-index:3; left:6px; top:3px;font-size: 20px;font-style:italic;font-weight: bolder;color: #FF5722 ">{{index +1}}</span>
+            <div class="layui-card" style="margin: 4px;" >
+                <div class="layui-card-body">
+                    <div style="position:relative;">
+                        <center><img src="{{ item.coverPath }}" style="width: 98% ;height:80px;"></center>
+                        {{#  if(getLastName(item.path)=== "mp4"){ }}
+                        <i class="layui-icon layui-icon-play" style="position:absolute; z-index:2; left:45px; top:30px;font-size: 40px;color: #5FB878"></i>
+                        {{#  } }}
+                    </div>
+                </div>
+                <!--<div class="layui-card-body" style="height: 10px">这是一段自我介绍</div>-->
+                <center> <div class="layui-card-header" style="height: 30px"><span style="font-size: 14px;font-family: 楷体">
+                    《{{  cutstr(item.title ,11)  }}》
+                </span></div></center>
+                <div class="layui-card-header" style="height: 30px"><span style="font-size: 12px;font-family: 楷体;">
+                      {{ cutstr(item.author ,8) }}</span>
+                    <span style="font-size: 12px; color: #FF5722;font-family: 楷体;float: right">{{ item.studyingCount }} <i class="layui-icon layui-icon-fire" style="font-size: 12px; color: #FF5722;"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </a>
+    {{#  });    }}
+    {{#  if(d.photosData.length === 0){ }}
+    <p>还没有任何热门课程！</p>
+    {{#  } }}
+
+
+</script>
+
+<script>
+
+    //获取后缀名
+    function getLastName(str){
+        var fileName = str.lastIndexOf(".");//获取到文件名开始到最后一个“.”的长度。
+        var fileNameLength = str.length;//获取到文件名长度
+
+        var result = str.substring(fileName + 1, fileNameLength);//截取后缀名
+        return result;
+    }
+    //字符串截取方法
+    function cutstr(str, len){
+        var str_length = 0;
+        var str_len = 0;
+        str_cut = new String();
+        str_len = str.length;
+        for (var i = 0; i < str_len; i++) {
+            a = str.charAt(i);
+            str_length++;
+            if (escape(a).length > 4) {
+                //中文字符的长度经编码之后大于4
+                str_length++;
+            }
+            str_cut = str_cut.concat(a);
+            if (str_length >= len) {
+                str_cut = str_cut.concat("..");
+                return str_cut;
+            }
+        }
+        //如果给定字符串小于指定长度，则返回源字符串；
+        if (str_length < len) {
+            return str;
+        }
+    }
+    layui.use(['dropdown', 'util', 'layer', 'element', 'jquery', 'laytpl', 'form','carousel'], function () {
+        var element = layui.element;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        var form = layui.form;
+        var laytpl = layui.laytpl;
+        var util = layui.util;
+        var carousel = layui.carousel;
+
+        //首页分类的点击事件
+        window.linkType = function(type){
+            layer.msg("即将进入 " +type+" 专栏...");
+            function jumpUrl() {
+                window.location.href = 'type?type='+type ;
+            }
+            setTimeout(jumpUrl, 1600);
+        };
+        //图片轮播
+         carousel.render({
+            elem: '#test10'
+            ,width: '100%'
+            ,height: '200px'
+            ,interval: 4000
+        });
+        //页面请求初始化
+        $.ajax({
+            url: "/getHotCourse",
+            type: 'GET',
+            dataType: 'json',
+            success: function (res) {
+                if (res.code == 0) {
+                    var result = res;
+                    var selectData = {
+                        "photosData": res.data
+                    };
+                    var getTpl = scriptPhotos.innerHTML;
+                    var view = document.getElementById('viewPhotos');
+                    laytpl(getTpl).render(selectData, function (html) {
+                        view.innerHTML = html;
+                    });
+                } else {
+                    //layer.msg(res.msg);
+                }
+            }
+        });
+
+    });
+
+
+
+</script>
+
+</body>
+</html>

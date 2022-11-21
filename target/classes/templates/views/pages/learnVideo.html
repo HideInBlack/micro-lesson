@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>课程视频学习界面</title>
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+    <script src="../res/layui/layui.js"></script>
+    <link rel="stylesheet" href="/zyMedia/zy.media.css" />
+    <script src="/zyMedia/zy.media.js"></script>
+    <style type="text/css">
+        ::-webkit-scrollbar {
+            height: 0;
+            width: 0;
+            color: transparent;
+        }
+    </style>
+</head>
+<body>
+
+<div style="margin-left: 10px;margin-right: 10px;margin-top: 10px">
+
+    <div  style="padding: 5px;">
+        <div class="layui-row layui-col-space13">
+            <!--PDF-->
+            <iframe  id="pdf" src=""  width="100%" height="300px" style="left: 0px;top: 0px;display: none"></iframe>
+
+            <!--视频-->
+            <div class="zy_media" id="video" style="display: none">
+                <video poster=""  id="videoPoster">
+                    <source id="sourceId" src="" type="video/mp4">
+                    您的浏览器不支持HTML5视频
+                </video>
+            </div>
+
+
+            <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                <ul class="layui-tab-title" >
+                    <li class="layui-this" style="width: 24%"> 简介与练习</li>
+                    <li style="width: 24%">笔记</li>
+                    <li style="width: 24%">评论</li>
+                </ul>
+
+                <!--课程布置-->
+                <div class="layui-tab-content" >
+
+                    <!--课程简介-->
+                    <div class="layui-tab-item layui-show">
+                        <button type="button" onclick="wantLearn()" class="layui-btn-sm layui-btn-warm layui-btn-radius" style="float: right;display: inline;">我要学习</button>
+                        <h2 style="font-weight: bolder"><span class="layui-badge"><span id="typeSpan"></span></span>&nbsp;
+                            <span id="titleSpan"></span></h2>
+                        <div style="color: #c2c2c2;margin-top: 5px"><span id="schoolSpan"></span>
+                            <div style="color: #FF5722;margin-top: 5px;float: right;display: inline;"><span id="countSpan"></span>人正在学</div>
+                            <br>开设时间：<span id="timeSpan"></span> <br>
+                        </div>
+
+                        <fieldset class="layui-elem-field layui-field-title" style="color: #009688">
+                            <legend><span style="font-size: 15px">课程简介</span></legend>
+                        </fieldset>
+                        &nbsp;&nbsp;<span id="infoSpan"></span>
+
+
+
+                        <fieldset class="layui-elem-field layui-field-title" style="color: #009688">
+                            <legend><span style="font-size: 15px">课后习题</span></legend>
+                        </fieldset>
+                        <form class="layui-form" action="" id="trainTest">
+                            <div id="viewPhotos3"></div>
+                            <center>
+                                <button type="button" onclick="redo()" class="layui-btn ">重做</button>
+                                <button type="button" onclick="checkTrain()" class="layui-btn  layui-btn-normal">提交</button>
+                            </center>
+
+
+                        </form>
+
+                    </div>
+
+                    <!--笔记-->
+                    <div class="layui-tab-item">
+
+                        <div class="layui-tab layui-tab-brief">
+                            <ul class="layui-tab-title" >
+                                <li class="layui-this" style="width: 41%">我的笔记</li>
+                                <li style="width: 41%">学友笔记</li>
+                            </ul>
+                            <div class="layui-tab-content">
+                                <div class="layui-tab-item layui-show">
+                                    <center>
+                                    <button type="button" onclick="addNote()" class="layui-btn layui-btn-radius"><i class="layui-icon layui-icon-addition"></i>  </button>
+                                    <div style="color:#c2c2c2 ">点击添加笔记</div>
+                                    </center>
+                                    <br>
+                                    <div id="viewPhotos"></div>
+
+                                </div>
+                                <div class="layui-tab-item">
+                                    <div id="viewPhotos1"></div>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+
+
+                    </div>
+
+                    <!--评论-->
+                    <div class="layui-tab-item">
+
+                        <form class="layui-form" action="" id="remark">
+                            <div class="layui-form-item">
+
+                                    <input type="text" id="remarkText" name="remarkContent" required  lay-verify="required" placeholder="评论内容..." autocomplete="off" class="layui-input" style="float: left;width: 85%">
+                              <button  onclick="addRemark()" type="button"	class="layui-btn layui-btn-sm" style="float: right;display: inline;margin-top: 3px"  >发表</button>
+                            </div>
+                        </form>
+
+                        <div id="viewPhotos2"></div>
+
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+</div>
+
+<script id="scriptPhotos" type="text/html">
+
+
+    {{#  layui.each(d.photosData, function(index, item){   }}
+
+    <i  class="layui-icon layui-icon-delete" style="float: right;display: inline;" onclick="deleteNote({{item.id}})"></i>
+    <img src="../utils/image/headImg/{{item.userId}}.jpg" class="layui-nav-img" style="width: 30px;height: 30px;"><span style="color:#c2c2c2">{{item.username}}</span>
+    <div style="margin-left: 40px">{{item.content}}</div>
+    <span style="color:#c2c2c2;font-size: 10px ;margin-left: 40px;">{{item.noteTime}}</span>
+    <hr  style="margin-left: 40px;">
+
+    {{#  });    }}
+    {{#  if(d.photosData.length === 0){ }}
+    <p>还没有做任何笔记！</p>
+    {{#  } }}
+
+
+</script>
+<script id="scriptPhotos1" type="text/html">
+
+
+    {{#  layui.each(d.photosData, function(index, item){   }}
+
+    <i  class="layui-icon layui-icon-more" style="float: right;display: inline;" ></i>
+    <img src="../utils/image/headImg/{{item.userId}}.jpg" class="layui-nav-img" style="width: 30px;height: 30px;"><span style="color:#c2c2c2">{{item.username}}</span>
+    <div style="margin-left: 40px">{{item.content}}</div>
+    <span style="color:#c2c2c2;font-size: 10px ;margin-left: 40px;">{{item.noteTime}}</span>
+    <div style="float: right;display: inline;">
+        {{#  if(item.collect === 0){ }}
+        <i  class="layui-icon layui-icon-star" onclick="collectNote({{item.id}})">&nbsp; &nbsp;</i>
+        {{#  } else{ }}
+        <i  class="layui-icon layui-icon-star-fill" onclick="noCollectNote({{item.id}})">&nbsp; &nbsp;</i>
+        {{#  } }}
+        <i  class="layui-icon layui-icon-praise" ></i>
+    </div>
+    <hr style="margin-left: 40px;">
+
+    {{#  });    }}
+    {{#  if(d.photosData.length === 0){ }}
+    <p>此课程还没有笔记！</p>
+    {{#  } }}
+
+
+</script>
+<script id="scriptPhotos2" type="text/html">
+
+
+    {{#  layui.each(d.photosData, function(index, item){   }}
+    {{#  if(item.me === 1){ }}
+    <i  class="layui-icon layui-icon-more" style="float: right;display: inline;" onclick="deleteRemark({{item.id}})"></i>
+    {{#  } }}
+    <img src="../utils/image/headImg/{{item.userId}}.jpg" class="layui-nav-img" style="width: 30px;height: 30px;"><span style="color:#c2c2c2">{{item.username}}</span>
+    <div style="margin-left: 40px">{{item.content}}</div>
+    <span style="color:#c2c2c2;font-size: 10px ;margin-left: 40px;">{{item.remarkTime}}</span>
+    <div style="float: right;display: inline;">
+        <i  class="layui-icon layui-icon-praise" ></i>
+    </div>
+    <hr style="margin-left: 40px;">
+
+    {{#  });    }}
+    {{#  if(d.photosData.length === 0){ }}
+    <p>此课程还没有评论！</p>
+    {{#  } }}
+
+
+</script>
+<script id="scriptPhotos3" type="text/html">
+
+
+    {{#  layui.each(d.photosData, function(index, item){   }}
+    <!--<a href="">-->
+    {{#     var selection = item.selection;
+    var select = selection.split(",");
+    }}
+    <div class="layui-form-item">
+        <div style="font-weight: bolder" id="question{{index+1}}">{{index+1}}.{{item.title}}</div><br>
+        <div style="margin-left: 15px">&nbsp;A.{{select[0]}}</div>
+        <div style="margin-left: 15px">&nbsp;B.{{select[1]}}</div>
+        <div style="margin-left: 15px">&nbsp;C.{{select[2]}}</div>
+        <div style="margin-left: 15px">&nbsp;D.{{select[3]}}</div>
+        <div style="margin-left: 20px">
+            <input type="radio" name="myAnswer{{index+1}}" value="A" title="A" >
+            <input type="radio" name="myAnswer{{index+1}}" value="B" title="B" >
+            <input type="radio" name="myAnswer{{index+1}}" value="C" title="C" >
+            <input type="radio" name="myAnswer{{index+1}}" value="D" title="D" >
+        </div>
+        <div id="result{{index+1}}" style="display: none;">
+            <span style="color: #1E9FFF;font-weight: bolder">正确答案：</span>
+            <span style="color: #1E9FFF;font-weight: bolder" id="rightAn{{index+1}}">{{item.answer}}</span>
+            &nbsp;<span style="color: #FFB800;font-weight: bolder">你的答案：</span> <span id="myAn{{index+1}}"></span></div>
+        <br>
+        <!--</a>-->
+        {{#  });    }}
+        {{#  if(d.photosData.length === 0){ }}
+        <p>此课程并没有习题！</p>
+        <br>
+        {{#  } }}
+</script>
+
+<script>
+    //获取json数据的长度
+    function getJsonLength(jsonData){
+        var jsonLength = 0;
+        for(var item in jsonData){
+            jsonLength++;
+        }
+        return jsonLength;
+    }
+
+    function getLastName(str){
+        var fileName = str.lastIndexOf(".");//获取到文件名开始到最后一个“.”的长度。
+        var fileNameLength = str.length;//获取到文件名长度
+
+        var result = str.substring(fileName + 1, fileNameLength);//截取后缀名
+        return result;
+    }
+    //字符串截取方法
+    function cutstr(str, len){
+        var str_length = 0;
+        var str_len = 0;
+        str_cut = new String();
+        str_len = str.length;
+        for (var i = 0; i < str_len; i++) {
+            a = str.charAt(i);
+            str_length++;
+            if (escape(a).length > 4) {
+                //中文字符的长度经编码之后大于4
+                str_length++;
+            }
+            str_cut = str_cut.concat(a);
+            if (str_length >= len) {
+                str_cut = str_cut.concat("..");
+                return str_cut;
+            }
+        }
+        //如果给定字符串小于指定长度，则返回源字符串；
+        if (str_length < len) {
+            return str;
+        }
+    }
+
+    function getLastName(str){
+        var fileName = str.lastIndexOf(".");//获取到文件名开始到最后一个“.”的长度。
+        var fileNameLength = str.length;//获取到文件名长度
+
+        var result = str.substring(fileName + 1, fileNameLength);//截取后缀名
+        return result;
+    }
+
+    layui.use(['dropdown', 'util', 'layer', 'element', 'jquery', 'laytpl', 'form'], function () {
+        var element = layui.element;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        var form = layui.form;
+        var laytpl = layui.laytpl;
+        var util = layui.util;
+
+        //(获得url中参数的方法)
+        function getParamString(paraPart, name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = paraPart.substr(1).match(reg);
+            if (r != null) return decodeURI(r[2]);
+            return null;
+        }
+        function getParamFromUrl(name) {
+            var r = getParamString(window.location.search, name);
+            return r;
+        }
+
+        var courseId = decodeURI(getParamFromUrl('courseId'));
+
+        $.fn.serializeObject = function () {
+            var o = {};
+            var a = this.serializeArray();
+            $.each(a, function () {
+                if (o[this.name]) {
+                    if (!o[this.name].push) {
+                        o[this.name] = [o[this.name]];
+                    }
+                    o[this.name].push(this.value || '');
+                } else {
+                    o[this.name] = this.value || '';
+                }
+            });
+            return o;
+        };
+
+
+        //我的笔记请求初始化
+        $.ajax({
+            url: "/getMyNotes?courseId=" +courseId,
+            type: 'GET',
+            dataType: 'json',
+            success: function (res) {
+                if (res.code == 0) {
+                    var selectData = {
+                        "photosData": res.data
+                    };
+                    var getTpl = scriptPhotos.innerHTML;
+                    var view = document.getElementById('viewPhotos');
+                    laytpl(getTpl).render(selectData, function (html) {
+                        view.innerHTML = html;
+                    });
+                } else {
+                    //layer.msg(res.msg);
+                }
+            }
+        });
+        //此课程的所有笔记
+        $.ajax({
+            url: "/getCourseNotes?courseId=" +courseId,
+            type: 'GET',
+            dataType: 'json',
+            success: function (res) {
+                if (res.code == 0) {
+                    var selectData = {
+                        "photosData": res.data
+                    };
+                    var getTpl = scriptPhotos1.innerHTML;
+                    var view = document.getElementById('viewPhotos1');
+                    laytpl(getTpl).render(selectData, function (html) {
+                        view.innerHTML = html;
+                    });
+                } else {
+                    //layer.msg(res.msg);
+                }
+            }
+        });
+        //所有评论请求初始化
+        $.ajax({
+            url: "/getCourseRemarks?courseId=" +courseId,
+            type: 'GET',
+            dataType: 'json',
+            success: function (res) {
+                if (res.code == 0) {
+                    var selectData = {
+                        "photosData": res.data
+                    };
+                    var getTpl = scriptPhotos2.innerHTML;
+                    var view = document.getElementById('viewPhotos2');
+                    laytpl(getTpl).render(selectData, function (html) {
+                        view.innerHTML = html;
+                    });
+                } else {
+                    //layer.msg(res.msg);
+                }
+            }
+        });
+        //获取习题初始化
+        $.ajax({
+            url: "/getAllTrain?courseId=" +courseId,
+            type: 'GET',
+            dataType: 'json',
+            success: function (res) {
+                if (res.code == 0) {
+                    var result = res;
+                    var selectData = {
+                        "photosData": res.data
+                    };
+                    var getTpl = scriptPhotos3.innerHTML;
+                    var view = document.getElementById('viewPhotos3');
+                    laytpl(getTpl).render(selectData, function (html) {
+                        view.innerHTML = html;
+                    });
+                    form.render();
+                } else {
+                    //layer.msg(res.msg);
+                }
+            }
+        });
+        //课程请求初始化
+        $.ajax({
+            url: "/getOneCourse?id=" + courseId,
+            type: 'GET',
+            dataType: 'json',
+            success: function (res) {
+
+                //课程简介初始化
+
+                document.getElementById("typeSpan").innerText = res.data.type;
+                document.getElementById("titleSpan").innerText = res.data.title;
+                document.getElementById("schoolSpan").innerText = res.data.school + " " +res.data.author;
+                document.getElementById("countSpan").innerText = res.data.studyingCount;
+                document.getElementById("timeSpan").innerText = res.data.uploadTime;
+                document.getElementById("infoSpan").innerText = res.data.info;
+
+                if(getLastName(res.data.url)=== "mp4"){//视频文件
+                    document.getElementById("video").setAttribute("style","display: block");
+                    document.getElementById("sourceId").setAttribute("src" ,res.data.url);
+                    document.getElementById("videoPoster").setAttribute("poster" ,res.data.coverPath);
+                    //zy播放器配置
+                    zymedia('video',{
+                        mediaTitle: "《"+res.data.title+"》--"+res.data.author
+                    });
+                }else{//pdf文件 172.20.10.8
+                    document.getElementById("pdf").setAttribute("style","display: block");
+                    //document.getElementById("pdf").setAttribute("src" ,"http://192.168.1.109:9898/pdfJs/web/viewer.html?file="+res.data.url);
+                    document.getElementById("pdf").setAttribute("src" ,"http://172.20.10.8:9898/pdfJs/web/viewer.html?file="+res.data.url);
+                }
+
+
+            }
+        });
+
+        //收藏笔记
+        window.collectNote = function(noteId){
+            $.ajax({
+                url: "/collectNote",
+                type: 'POST',
+                data: {
+                    "noteId":noteId
+                },
+                dataType: 'json',
+                success: function (res) {
+                    layer.msg(res.msg);
+                    //做完笔记重新渲染笔记的内容
+                    $.ajax({
+                        url: "/getMyNotes?courseId=" +courseId,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.code == 0) {
+                                var selectData = {
+                                    "photosData": res.data
+                                };
+                                var getTpl = scriptPhotos.innerHTML;
+                                var view = document.getElementById('viewPhotos');
+                                laytpl(getTpl).render(selectData, function (html) {
+                                    view.innerHTML = html;
+                                });
+                            } else {
+                                //layer.msg(res.msg);
+                            }
+                        }
+                    });
+                    //此课程的所有笔记也要重载
+                    $.ajax({
+                        url: "/getCourseNotes?courseId=" +courseId,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.code == 0) {
+                                var selectData = {
+                                    "photosData": res.data
+                                };
+                                var getTpl = scriptPhotos1.innerHTML;
+                                var view = document.getElementById('viewPhotos1');
+                                laytpl(getTpl).render(selectData, function (html) {
+                                    view.innerHTML = html;
+                                });
+                            } else {
+                                //layer.msg(res.msg);
+                            }
+                        }
+                    });
+                }
+            });
+        };
+        //取消收藏笔记的
+        window.noCollectNote = function(noteId){
+            $.ajax({
+                url: "/noCollectNote",
+                type: 'POST',
+                data: {
+                    "noteId":noteId
+                },
+                dataType: 'json',
+                success: function (res) {
+                    layer.msg(res.msg);
+                    //做完笔记重新渲染笔记的内容
+                    $.ajax({
+                        url: "/getMyNotes?courseId=" +courseId,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.code == 0) {
+                                var selectData = {
+                                    "photosData": res.data
+                                };
+                                var getTpl = scriptPhotos.innerHTML;
+                                var view = document.getElementById('viewPhotos');
+                                laytpl(getTpl).render(selectData, function (html) {
+                                    view.innerHTML = html;
+                                });
+                            } else {
+                                //layer.msg(res.msg);
+                            }
+                        }
+                    });
+                    //此课程的所有笔记也要重载
+                    $.ajax({
+                        url: "/getCourseNotes?courseId=" +courseId,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.code == 0) {
+                                var selectData = {
+                                    "photosData": res.data
+                                };
+                                var getTpl = scriptPhotos1.innerHTML;
+                                var view = document.getElementById('viewPhotos1');
+                                laytpl(getTpl).render(selectData, function (html) {
+                                    view.innerHTML = html;
+                                });
+                            } else {
+                                //layer.msg(res.msg);
+                            }
+                        }
+                    });
+                }
+            });
+        };
+
+        //点击我要学习按钮的事件
+        window.wantLearn = function(){
+            $.ajax({
+                url: "/wantLearn",
+                type: 'POST',
+                data: {
+                    "courseId":courseId
+                },
+                dataType: 'json',
+                success: function (res) {
+                    layer.msg(res.msg);
+
+                }
+            });
+        };
+
+        //redo点击重做按钮事件
+        window.redo = function(){
+            //获取习题初始化
+            $.ajax({
+                url: "/getAllTrain?courseId=" +courseId,
+                type: 'GET',
+                dataType: 'json',
+                success: function (res) {
+                    if (res.code == 0) {
+                        var result = res;
+                        var selectData = {
+                            "photosData": res.data
+                        };
+                        var getTpl = scriptPhotos3.innerHTML;
+                        var view = document.getElementById('viewPhotos3');
+                        laytpl(getTpl).render(selectData, function (html) {
+                            view.innerHTML = html;
+                        });
+                        form.render();
+                    } else {
+                        //layer.msg(res.msg);
+                    }
+                }
+            });
+        };
+        //批改习题的按钮
+        window.checkTrain = function(){
+            var JSONdata = JSON.parse(JSON.stringify($('#trainTest').serializeObject()));
+            // for (x in JSONdata) {
+            //     if (JSONdata[x]== "" ) {
+            //         layer.msg("还有习题没有完成！");
+            //         return;
+            //     }
+            // }
+
+            for(var i=1 ; i< getJsonLength(JSONdata) +1 ; i++){
+                document.getElementById("result"+i).setAttribute("style","display:block;margin-top: 5px");
+                document.getElementById("myAn"+i).innerText=JSONdata["myAnswer"+i];
+                if(document.getElementById("rightAn"+i).innerText === JSONdata["myAnswer"+  i]){//答案正确
+                    document.getElementById("myAn"+i).setAttribute("style","color:#1E9FFF;font-weight: bolder");
+                }else{
+                    document.getElementById("question"+i).setAttribute("style","color:#FF5722;font-weight: bolder");
+                    document.getElementById("myAn"+i).setAttribute("style","color:#FF5722;font-weight: bolder");
+                }
+            }
+
+        };
+
+        //删除评论的事件
+        window.deleteRemark= function(id){
+            //配置一个透明的询问框
+            layer.msg('删除此条自己的评论吗？', {
+                time: 30000, //30s后自动关闭
+                btn: ['确定', '取消'],
+                btnAlign: 'c',
+                id: 'LAY_delete', //设定一个id，防止重复弹出
+                yes: function () {
+                    $.ajax({
+                        url: "/deleteRemarks",
+                        type: 'POST',
+                        data: {
+                            "id":id
+                        },
+                        dataType: 'json',
+                        success: function (res) {
+                            layer.msg(res.msg);
+                            //所有评论请求初始化
+                            $.ajax({
+                                url: "/getCourseRemarks?courseId=" +courseId,
+                                type: 'GET',
+                                dataType: 'json',
+                                success: function (res) {
+                                    if (res.code == 0) {
+                                        var selectData = {
+                                            "photosData": res.data
+                                        };
+                                        var getTpl = scriptPhotos2.innerHTML;
+                                        var view = document.getElementById('viewPhotos2');
+                                        laytpl(getTpl).render(selectData, function (html) {
+                                            view.innerHTML = html;
+                                        });
+                                    } else {
+                                        //layer.msg(res.msg);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+
+
+        };
+        //删除笔记的事件
+        window.deleteNote = function(id){
+
+            $.ajax({
+                url: "/deleteNote",
+                type: 'POST',
+                data: {
+                    "id":id
+                },
+                dataType: 'json',
+                success: function (res) {
+                    layer.msg(res.msg);
+                    //做完笔记重新渲染笔记的内容
+                    $.ajax({
+                        url: "/getMyNotes?courseId=" +courseId,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.code == 0) {
+                                var selectData = {
+                                    "photosData": res.data
+                                };
+                                var getTpl = scriptPhotos.innerHTML;
+                                var view = document.getElementById('viewPhotos');
+                                laytpl(getTpl).render(selectData, function (html) {
+                                    view.innerHTML = html;
+                                });
+                            } else {
+                                //layer.msg(res.msg);
+                            }
+                        }
+                    });
+                    //此课程的所有笔记也要重载
+                    $.ajax({
+                        url: "/getCourseNotes?courseId=" +courseId,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (res) {
+                            if (res.code == 0) {
+                                var selectData = {
+                                    "photosData": res.data
+                                };
+                                var getTpl = scriptPhotos1.innerHTML;
+                                var view = document.getElementById('viewPhotos1');
+                                laytpl(getTpl).render(selectData, function (html) {
+                                    view.innerHTML = html;
+                                });
+                            } else {
+                                //layer.msg(res.msg);
+                            }
+                        }
+                    });
+                }
+            });
+        };
+
+
+        //发表评论
+        window.addRemark = function(){
+            var JSONdata = JSON.parse(JSON.stringify($('#remark').serializeObject()));
+            if (JSONdata.remarkContent == "" ) {
+                layer.msg("请先输入评论内容！");
+            } else {
+                $.ajax({
+                    url: "/addRemark",
+                    type: 'POST',
+                    data: {
+                        "courseId":courseId,
+                        "content": JSONdata.remarkContent
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        document.getElementById("remarkText").value = "";
+                        layer.closeAll();
+                        layer.msg(res.msg, {
+                            shade: 0.1,
+                            time: 1000
+                        }, function (index) {
+                            layer.closeAll();
+                            //所有评论请求初始化
+                            $.ajax({
+                                url: "/getCourseRemarks?courseId=" +courseId,
+                                type: 'GET',
+                                dataType: 'json',
+                                success: function (res) {
+                                    if (res.code == 0) {
+                                        var selectData = {
+                                            "photosData": res.data
+                                        };
+                                        var getTpl = scriptPhotos2.innerHTML;
+                                        var view = document.getElementById('viewPhotos2');
+                                        laytpl(getTpl).render(selectData, function (html) {
+                                            view.innerHTML = html;
+                                        });
+                                    } else {
+                                        //layer.msg(res.msg);
+                                    }
+                                }
+                            });
+                        });
+                    }
+                });
+            }
+        };
+        //添加笔记的事件
+        window.addNote = function(){
+            layer.open({
+                type: 1,
+                title: '正在添加笔记', //标题栏
+                skin: 'layui-layer-rim', //加上边框
+                closeBtn: false,
+                area: ['300px', '234px'],
+                shade: 0.1,
+                id: 'LAY_layuipro', //设定一个id，防止重复弹出
+                btn: ['添加', '关闭'],
+                btnAlign: 'c',
+                moveType: 1, //拖拽模式，0或者1
+                content: '<div style="margin-left: 5px;margin-right: 5px; margin-top: 5px">' +
+                '<form class="layui-form" action="" id="table_add" lay-filter="form_add">' +
+                '<div class="layui-form-item" >' +
+                ' <textarea name="note" placeholder="请输入笔记内容..." class="layui-textarea"></textarea>' +
+                ' </div>' +
+                '  </form>' +
+                '</div>',
+                success: function () {
+
+                },
+                yes: function () {
+
+                    var JSONdata = JSON.parse(JSON.stringify($('#table_add').serializeObject()));
+                    if (JSONdata.note == "" ) {
+                        layer.msg("请先完善必需信息！");
+                    } else {
+                        $.ajax({
+                            url: "/addNote",
+                            type: 'POST',
+                            data: {
+                                "courseId":courseId,
+                                "content": JSONdata.note
+                            },
+                            dataType: 'json',
+                            success: function (res) {
+                                layer.closeAll();
+                                layer.msg(res.msg, {
+                                    shade: 0.1,
+                                    time: 1000
+                                }, function (index) {
+                                    layer.closeAll();
+                                    //window.location.reload()//页面重加载
+                                    //做完笔记重新渲染笔记的内容
+                                    $.ajax({
+                                        url: "/getMyNotes?courseId=" +courseId,
+                                        type: 'GET',
+                                        dataType: 'json',
+                                        success: function (res) {
+                                            if (res.code == 0) {
+                                                var selectData = {
+                                                    "photosData": res.data
+                                                };
+                                                var getTpl = scriptPhotos.innerHTML;
+                                                var view = document.getElementById('viewPhotos');
+                                                laytpl(getTpl).render(selectData, function (html) {
+                                                    view.innerHTML = html;
+                                                });
+                                            } else {
+                                                //layer.msg(res.msg);
+                                            }
+                                        }
+                                    });
+                                    //此课程的所有笔记也要重载
+                                    $.ajax({
+                                        url: "/getCourseNotes?courseId=" +courseId,
+                                        type: 'GET',
+                                        dataType: 'json',
+                                        success: function (res) {
+                                            if (res.code == 0) {
+                                                var selectData = {
+                                                    "photosData": res.data
+                                                };
+                                                var getTpl = scriptPhotos1.innerHTML;
+                                                var view = document.getElementById('viewPhotos1');
+                                                laytpl(getTpl).render(selectData, function (html) {
+                                                    view.innerHTML = html;
+                                                });
+                                            } else {
+                                                //layer.msg(res.msg);
+                                            }
+                                        }
+                                    });
+                                });
+                            }
+                        });
+                    }
+
+                }
+            });
+        };
+
+
+
+
+
+
+
+    });
+
+</script>
+
+</body>
+</html>
